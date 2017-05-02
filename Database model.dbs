@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="Dziennik aktywności fizycznej" id="Project_2cc95ad2" template="Default" database="PostgreSQL" >
+	<schema name="dziennik aktywności fizycznej" schemaname="dziennik aktywności fizycznej" >
+		<table name="track" >
+			<column name="przedział_czasowy" type="time" jt="92" />
+			<column name="czas" type="time" jt="92" />
+		</table>
+		<table name="trening/sesja" >
+			<column name="id_użytkownika" type="integer" jt="4" mandatory="y" />
+			<column name="typ" type="char" length="50" jt="1" mandatory="y" />
+			<column name="trasa" type="json" jt="2000" mandatory="y" />
+			<column name="data_rozpoczęcia" type="date" jt="91" mandatory="y" />
+			<column name="data_zakończenia" type="date" jt="91" mandatory="y" />
+			<column name="odległość" type="float8" jt="6" mandatory="y" >
+				<defo>0</defo>
+			</column>
+			<column name="przewyższenie" type="float8" jt="6" mandatory="y" />
+			<index name="pk_trening/sesja" unique="PRIMARY_KEY" >
+				<column name="id_użytkownika" />
+			</index>
+			<index name="idx_trening/sesja" unique="NORMAL" >
+				<column name="typ" />
+			</index>
+			<fk name="typ_treningu" to_schema="dziennik aktywności fizycznej" to_table="typ_treningu" delete_action="setNull" >
+				<fk_column name="typ" pk="x" />
+			</fk>
+		</table>
+		<table name="typ_treningu" >
+			<column name="x" type="char" length="50" jt="1" />
+			<index name="pk_typ_treningu" unique="UNIQUE" >
+				<column name="x" />
+			</index>
+		</table>
+		<table name="użytkownicy" >
+			<column name="id_użytkownika" type="integer" length="50" jt="4" mandatory="y" />
+			<column name="nazwa_użytkownika" type="integer" jt="4" />
+			<column name="data_dołączenia" type="integer" jt="4" />
+			<column name="znajomi" type="integer" jt="4" />
+			<index name="pk_użytkownicy" unique="PRIMARY_KEY" >
+				<column name="id_użytkownika" />
+			</index>
+			<fk name="fk_użytkownicy" to_schema="dziennik aktywności fizycznej" to_table="trening/sesja" >
+				<fk_column name="id_użytkownika" pk="id_użytkownika" />
+			</fk>
+		</table>
+		<table name="znajomi" >
+			<column name="x" type="time" jt="92" />
+		</table>
+	</schema>
+	<layout name="Default Layout" id="Layout_25c233cd" show_relation="columns" >
+		<entity schema="dziennik aktywności fizycznej" name="typ_treningu" color="c1d8ee" x="544" y="48" />
+		<entity schema="dziennik aktywności fizycznej" name="użytkownicy" color="c1d8ee" x="48" y="48" />
+		<entity schema="dziennik aktywności fizycznej" name="track" color="c1d8ee" x="528" y="384" />
+		<entity schema="dziennik aktywności fizycznej" name="trening/sesja" color="c1d8ee" x="320" y="160" />
+		<entity schema="dziennik aktywności fizycznej" name="znajomi" color="c1d8ee" x="64" y="336" />
+	</layout>
+</project>
