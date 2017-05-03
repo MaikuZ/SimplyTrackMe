@@ -24,11 +24,15 @@
 				<defo>0</defo>
 			</column>
 			<column name="przewyższenie" type="float8" jt="6" mandatory="y" />
+			<column name="id_owner" type="integer" jt="4" mandatory="y" />
 			<index name="pk_trening/sesja" unique="PRIMARY_KEY" >
 				<column name="id_session" />
 			</index>
 			<index name="idx_trening/sesja" unique="NORMAL" >
 				<column name="typ" />
+			</index>
+			<index name="pk_session" unique="UNIQUE" >
+				<column name="id_owner" />
 			</index>
 			<fk name="typ_treningu" to_schema="dziennik aktywności fizycznej" to_table="type_workout" delete_action="setNull" >
 				<fk_column name="typ" pk="x" />
@@ -81,14 +85,17 @@
 			<fk name="fk_users_0" to_schema="dziennik aktywności fizycznej" to_table="user_session" >
 				<fk_column name="id_user" pk="id_user" />
 			</fk>
+			<fk name="fk_users_1" to_schema="dziennik aktywności fizycznej" to_table="session" >
+				<fk_column name="id_user" pk="id_owner" />
+			</fk>
 		</table>
 	</schema>
 	<layout name="Default Layout" id="Layout_25c233cd" show_relation="columns" >
-		<entity schema="dziennik aktywności fizycznej" name="users" color="c1d8ee" x="48" y="64" />
-		<entity schema="dziennik aktywności fizycznej" name="user_session" color="1f5182" x="320" y="48" />
-		<entity schema="dziennik aktywności fizycznej" name="type_workout" color="c1d8ee" x="768" y="48" />
-		<entity schema="dziennik aktywności fizycznej" name="track" color="c1d8ee" x="784" y="320" />
-		<entity schema="dziennik aktywności fizycznej" name="session" color="c1d8ee" x="416" y="240" />
-		<entity schema="dziennik aktywności fizycznej" name="friends" color="c1d8ee" x="64" y="352" />
+		<entity schema="dziennik aktywności fizycznej" name="user_session" color="1f5182" x="304" y="80" />
+		<entity schema="dziennik aktywności fizycznej" name="type_workout" color="c1d8ee" x="752" y="80" />
+		<entity schema="dziennik aktywności fizycznej" name="track" color="c1d8ee" x="768" y="352" />
+		<entity schema="dziennik aktywności fizycznej" name="friends" color="c1d8ee" x="48" y="384" />
+		<entity schema="dziennik aktywności fizycznej" name="session" color="c1d8ee" x="400" y="272" />
+		<entity schema="dziennik aktywności fizycznej" name="users" color="c1d8ee" x="48" y="48" />
 	</layout>
 </project>
