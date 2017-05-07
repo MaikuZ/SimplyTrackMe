@@ -78,6 +78,7 @@ public class Start extends AppCompatActivity {
         new Timer().scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
+                tracker.getLocation();
                 currentTrack.addNode(tracker.getLat(),tracker.getLon(), Calendar.getInstance().getTime().getTime());
             }
         }, 0, 1000*1);//Time to continue;
