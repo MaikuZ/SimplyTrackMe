@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 
 public class Main extends AppCompatActivity {
@@ -38,8 +37,9 @@ public class Main extends AppCompatActivity {
         }
     }
 
-    public void Settings(View view) {
-        Intent intent = new Intent(this, SettingsActivity.class);
+    public void goToSettings(View view) {
+        Intent intent = new Intent(this, Settings.class);
         startActivity(intent);
     }
+
 }
