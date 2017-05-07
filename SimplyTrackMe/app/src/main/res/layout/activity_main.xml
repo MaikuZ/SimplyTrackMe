@@ -44,7 +44,7 @@
         android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:layout_marginLeft="40dp"
-        android:layout_marginTop="53dp"
+        android:layout_marginTop="50dp"
         android:onClick="goToSettings"
         android:text="SETTING"
         app:layout_constraintLeft_toLeftOf="parent"
