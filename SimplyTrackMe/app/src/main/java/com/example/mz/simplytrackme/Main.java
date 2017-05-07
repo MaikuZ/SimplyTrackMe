@@ -17,7 +17,12 @@ public class Main extends AppCompatActivity {
     public void goToHistory(View view)
     {
         Intent intent = new Intent(this, History.class);
+        startActivity(intent);
+    }
 
+    public void goToStar(View view)
+    {
+        Intent intent = new Intent(this, Start.class);
         startActivity(intent);
     }
 }
