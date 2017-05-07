@@ -19,17 +19,31 @@ class Track {
     private class Type {
         StringBuilder name;
     }
-    private class Node{
-        double lat;
-        double lon;
-        long time_elapsed;///Since the beginning
+    public class Node{
+        private double lat;
+        private double lon;
+        private long time_elapsed;///Since the beginning
         Node(double lattitude, double longitude,long time) {
             lat = lattitude;
             lon = longitude;
             time_elapsed = time;
         }
+        double getLat() {
+            return lat;
+        }
+        double getLon(){
+            return lon;
+        }
+        long getTime_elapsed(){
+            return time_elapsed;
+        }
     }
     private ArrayList<Node> List;
+    public Node getLast() {
+        if(List.size() == 0)
+            return null;
+        return List.get(List.size()-1);
+    }
     private ArrayList<Person> Participents;
     Track() {
         List = new ArrayList<>();
