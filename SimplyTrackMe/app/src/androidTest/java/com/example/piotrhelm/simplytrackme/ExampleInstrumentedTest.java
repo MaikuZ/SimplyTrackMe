@@ -1,9 +1,8 @@
-package com.example.mz.simplytrackme;
+package com.example.piotrhelm.simplytrackme;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import android.view.View;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.mz.simplytrackme", appContext.getPackageName());
+        assertEquals("com.example.piotrhelm.simplytrackme", appContext.getPackageName());
     }
 }

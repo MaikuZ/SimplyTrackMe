@@ -1,4 +1,4 @@
-package com.example.mz.simplytrackme;
+package com.example.piotrhelm.simplytrackme;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
