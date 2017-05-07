@@ -2,6 +2,7 @@ package com.example.piotrhelm.simplytrackme;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -12,8 +13,8 @@ class Track {
 
     static int lastID = 0;
     private int id;
-    private String start_date;
-    private String end_date;
+    private long start_date;
+    private long end_date;
     private Person owner;
     private class Type {
         StringBuilder name;
@@ -21,13 +22,21 @@ class Track {
     private class Node{
         double lat;
         double lon;
-        double time_elapsed;///Since the beginning
+        long time_elapsed;///Since the beginning
+        Node(double lattitude, double longitude,long time) {
+            lat = lattitude;
+            lon = longitude;
+            time_elapsed = time;
+        }
     }
     private ArrayList<Node> List;
     private ArrayList<Person> Participents;
     Track() {
         List = new ArrayList<>();
-        start_date = DateFormat.getDateTimeInstance().format(new Date());
+        start_date = Calendar.getInstance().getTime().getTime();
         id = lastID++;
+    }
+    public void addNode(double lat, double lon, long time){
+        List.add(new Node(lat,lon,time-start_date));
     }
 }

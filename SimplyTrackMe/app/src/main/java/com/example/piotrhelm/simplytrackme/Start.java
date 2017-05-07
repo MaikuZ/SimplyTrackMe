@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 public class Start extends AppCompatActivity {
 
+    Track currentTrack;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,18 +20,22 @@ public class Start extends AppCompatActivity {
         }
         tracker.getLocation();
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-        // Setting Dialog Title
-        alertDialog.setTitle("GPS location");
+        {///Alert with current location
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+            // Setting Dialog Title
+            alertDialog.setTitle("GPS location");
 
-        // Setting Dialog Message
-        alertDialog.setMessage("Current Lat: " + tracker.getLat() + "Current Lon: " + tracker.getLon());
+            // Setting Dialog Message
+            alertDialog.setMessage("Current Lat: " + tracker.getLat() + "Current Lon: " + tracker.getLon());
 
-        // Setting Icon to Dialog
-        //alertDialog.setIcon(R.drawable.delete);
+            // Setting Icon to Dialog
+            //alertDialog.setIcon(R.drawable.delete);
 
 
-        // Showing Alert Message
-        alertDialog.show();
+            // Showing Alert Message
+            alertDialog.show();
+        }
+        currentTrack = new Track();
+
     }
 }
