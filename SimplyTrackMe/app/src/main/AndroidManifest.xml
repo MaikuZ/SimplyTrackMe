@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.piotrhelm.simplytrackme">
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,7 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".History"
             android:parentActivityName=".Main">
@@ -25,7 +28,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Main" />
         </activity>
-
         <activity
             android:name=".Profile"
             android:parentActivityName=".Main">
@@ -35,7 +37,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Main" />
         </activity>
-
         <activity
             android:name=".Start"
             android:parentActivityName=".Main">
@@ -47,17 +48,14 @@
         </activity>
 
         <activity
-            android:name=".Settings"
+            android:name=".SettingsActivity"
             android:parentActivityName=".Main">
 
-            <!-- The meta-data tag is required if you support API level 15 and lower -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".Main" />
         </activity>
 
-
     </application>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.INTERNET" />
+
 </manifest>
