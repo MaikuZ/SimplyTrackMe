@@ -28,4 +28,9 @@ public class Main extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void goToSettings(View view) {
+        Intent intent = new Intent(this, Settings.class);
+        startActivity(intent);
+    }
+
 }
