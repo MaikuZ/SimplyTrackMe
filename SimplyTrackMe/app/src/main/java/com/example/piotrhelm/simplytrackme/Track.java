@@ -46,6 +46,22 @@ class Track {
     private class Type {
         StringBuilder name;
     }
+
+    void setId(int a) {
+        id = a;
+    }
+
+    void setEnd_date(long a) {
+        end_date = a;
+    }
+
+    void setStart_date(long a) {
+        start_date = a;
+    }
+
+    void setOwner(Person a) {
+        owner = a;
+    }
     public class Node{
         private double lat;
         private double lon;
