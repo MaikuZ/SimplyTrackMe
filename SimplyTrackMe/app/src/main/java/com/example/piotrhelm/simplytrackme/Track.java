@@ -1,10 +1,16 @@
 package com.example.piotrhelm.simplytrackme;
 
+import android.content.Context;
+
+import com.google.gson.Gson;
+
+import java.io.FileOutputStream;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import static com.example.piotrhelm.simplytrackme.TrackJSON.toJSON;
 import static java.lang.Math.atan2;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -58,7 +64,21 @@ class Track {
     void setStart_date(long a) {
         start_date = a;
     }
-
+    static String toJSON(Track track_in) {
+        Gson gson = new Gson();
+        return gson.toJson(track_in);
+    };
+    void saveToFile(Context mContext){
+        String filename = id + ".json";
+        String outputString = toJSON(this);
+        try {
+            FileOutputStream outputStream =  mContext.openFileOutput(filename, Context.MODE_PRIVATE);
+            outputStream.write(outputString.getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     void setOwner(Person a) {
         owner = a;
     }

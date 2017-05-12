@@ -10,6 +10,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 import java.util.Calendar;
 import java.util.Timer;
@@ -23,7 +24,12 @@ public class Start extends AppCompatActivity {
     ///2) BACKUP EVERY n seconds. I.E. saving .json file
     ///3) ADD button to end session. Add text showing current stats.
     private Track currentTrack;
+    private Timer GPSUpdater;
     private int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
+    @Override
+    public void onBackPressed() {
+        moveTaskToBack(true);///Disables returning to the main menu.
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,12 +81,20 @@ public class Start extends AppCompatActivity {
             alertDialog.show();
         }
         currentTrack = new Track();
-        new Timer().scheduleAtFixedRate(new TimerTask() {
+        GPSUpdater = new Timer();
+        GPSUpdater.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
                 tracker.getLocation();
                 currentTrack.addNode(tracker.getLat(),tracker.getLon(), Calendar.getInstance().getTime().getTime());
+                TrackJSON.toJSON(currentTrack);
             }
-        }, 0, 1000*1);//Time to continue;
+        }, 0, 1000*10);//Time to continue;
+    }
+    public void endSession(View view) {
+        moveTaskToBack(false);
+        currentTrack.saveToFile(this);
+        GPSUpdater.cancel();
+        finish();
     }
 }

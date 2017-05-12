@@ -45,7 +45,6 @@ class GPSTracker extends Service implements LocationListener {
         this.mContext = context;
         getLocation();
     }
-
     public Location getLocation() {
         try {
             locationManager = (LocationManager) mContext
@@ -158,7 +157,7 @@ class GPSTracker extends Service implements LocationListener {
         //alertDialog.setIcon(R.drawable.delete);
 
         // On pressing SettingsActivity button
-        alertDialog.setPositiveButton("SettingsActivity", new DialogInterface.OnClickListener() {
+        alertDialog.setPositiveButton("Settings", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog,int which) {
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                 mContext.startActivity(intent);
