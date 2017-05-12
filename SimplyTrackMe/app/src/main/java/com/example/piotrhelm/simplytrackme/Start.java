@@ -16,13 +16,15 @@ import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.os.SystemClock.sleep;
+
 public class Start extends AppCompatActivity {
 
     ///TODO:
     ///1) RETURNING TO THE PREVIOUS SCREEN NOT ALLOWED, UNTIL THE USER ENDS THE SESSION. IT SHALL THEN BE SAVED AS .JSON FILE
-    ///IN THE INTERNAL STORAGE
+    ///IN THE INTERNAL STORAGE DONE!
     ///2) BACKUP EVERY n seconds. I.E. saving .json file
-    ///3) ADD button to end session. Add text showing current stats.
+    ///3) ADD button to end session. Add text showing current stats. WIP.
     private Track currentTrack;
     private Timer GPSUpdater;
     private int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
@@ -67,17 +69,8 @@ public class Start extends AppCompatActivity {
         tracker.getLocation();
         {///Alert with current location
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-            // Setting Dialog Title
             alertDialog.setTitle("GPS location");
-
-            // Setting Dialog Message
             alertDialog.setMessage("Current Lat: " + tracker.getLat() + "Current Lon: " + tracker.getLon());
-
-            // Setting Icon to Dialog
-            //alertDialog.setIcon(R.drawable.delete);
-
-
-            // Showing Alert Message
             alertDialog.show();
         }
         currentTrack = new Track();
@@ -87,7 +80,6 @@ public class Start extends AppCompatActivity {
             public void run() {
                 tracker.getLocation();
                 currentTrack.addNode(tracker.getLat(),tracker.getLon(), Calendar.getInstance().getTime().getTime());
-                TrackJSON.toJSON(currentTrack);
             }
         }, 0, 1000*10);//Time to continue;
     }

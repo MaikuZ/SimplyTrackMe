@@ -4,7 +4,10 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -75,6 +78,23 @@ class Track {
             FileOutputStream outputStream =  mContext.openFileOutput(filename, Context.MODE_PRIVATE);
             outputStream.write(outputString.getBytes());
             outputStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    void loadFromFile(Context mContext, String fileName){
+
+        try {
+            FileInputStream inputStream = mContext.openFileInput(fileName);
+            BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
+            StringBuilder total = new StringBuilder();
+            String line;
+            while ((line = r.readLine()) != null) {
+                total.append(line);
+            }
+            r.close();
+            Gson temp = new Gson();
+            inputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
