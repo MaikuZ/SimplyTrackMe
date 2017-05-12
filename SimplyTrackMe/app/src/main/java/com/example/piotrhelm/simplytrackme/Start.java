@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -87,6 +88,12 @@ public class Start extends AppCompatActivity {
             alertDialog.show();
         }
         currentTrack = new Track();
+        currentTrack.setOwner(new Person(
+                PreferenceManager.getDefaultSharedPreferences(this).getString("person_name", "none"),
+                Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("person_age", "0")),
+                Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("person_height", "0")),
+                Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("person_weight", "0"))
+        ));
         GPSUpdater = new Thread() {
             @Override
             public void run() {

@@ -51,6 +51,11 @@ class Track {
     private long start_date;
     private double totalDistance = 0;
     private long end_date;
+
+    public Person getOwner() {
+        return owner;
+    }
+
     private Person owner;
 
     public double getTotalDistance() {

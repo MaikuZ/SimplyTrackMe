@@ -7,10 +7,23 @@ import java.util.ArrayList;
  */
 
 class Person {
-    StringBuilder name;
+    public Person() {
+        this.name = "DUMMY MAN";
+    }
+    public Person(String name) {
+        this.name = name;
+    }
+    String name;
     Integer age;
     Integer height;
     Integer weight;
     ArrayList<Person> Friends;
+
+    public Person(String name, Integer age, Integer height, Integer weight) {
+        this.name = name;
+        this.age = age;
+        this.height = height;
+        this.weight = weight;
+    }
 }
 
