@@ -37,7 +37,8 @@
         </activity>
 
         <activity
-            android:name=".Start">
+            android:name=".Start"
+            android:screenOrientation="portrait">
         </activity>
 
         <activity

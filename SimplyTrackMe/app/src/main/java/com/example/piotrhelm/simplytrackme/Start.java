@@ -5,27 +5,41 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
+
+import org.w3c.dom.Text;
 
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static android.os.SystemClock.sleep;
+
 public class Start extends AppCompatActivity {
 
     ///TODO:
     ///1) RETURNING TO THE PREVIOUS SCREEN NOT ALLOWED, UNTIL THE USER ENDS THE SESSION. IT SHALL THEN BE SAVED AS .JSON FILE
-    ///IN THE INTERNAL STORAGE
+    ///IN THE INTERNAL STORAGE DONE!
     ///2) BACKUP EVERY n seconds. I.E. saving .json file
-    ///3) ADD button to end session. Add text showing current stats.
+    ///3) ADD button to end session. Add text showing current stats. WIP.
     private Track currentTrack;
-    private Timer GPSUpdater;
+    private Thread GPSUpdater;
     private int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
+    private View myView;
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        return;
+    }
+    private void updateTextView(String newText,TextView textView) {
+        textView.setText(newText);
+    }
     @Override
     public void onBackPressed() {
         moveTaskToBack(true);///Disables returning to the main menu.
@@ -34,6 +48,7 @@ public class Start extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+        final TextView currentStats = (TextView)findViewById(R.id.textView);
         final GPSTracker tracker = new GPSTracker(this);
         if(!tracker.isGPSOn) {
             tracker.showSettingsAlert();
@@ -67,34 +82,41 @@ public class Start extends AppCompatActivity {
         tracker.getLocation();
         {///Alert with current location
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
-            // Setting Dialog Title
             alertDialog.setTitle("GPS location");
-
-            // Setting Dialog Message
             alertDialog.setMessage("Current Lat: " + tracker.getLat() + "Current Lon: " + tracker.getLon());
-
-            // Setting Icon to Dialog
-            //alertDialog.setIcon(R.drawable.delete);
-
-
-            // Showing Alert Message
             alertDialog.show();
         }
         currentTrack = new Track();
-        GPSUpdater = new Timer();
-        GPSUpdater.scheduleAtFixedRate(new TimerTask() {
+        GPSUpdater = new Thread() {
             @Override
             public void run() {
-                tracker.getLocation();
-                currentTrack.addNode(tracker.getLat(),tracker.getLon(), Calendar.getInstance().getTime().getTime());
-                TrackJSON.toJSON(currentTrack);
+                try {
+                    while (!isInterrupted()) {
+                        Thread.sleep(1000*1);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                tracker.getLocation();
+                                currentTrack.addNode(tracker.getLat(),tracker.getLon(), Calendar.getInstance().getTime().getTime());
+                                updateTextView("Current Distance: " +
+                                        currentTrack.getTotalDistance()/1000 + " km" + "\n" +
+                                        "Current Location: " + tracker.getLocation() + "\n" +
+                                        "Track: " + currentTrack.toJSON(currentTrack)
+                                        ,currentStats
+                                );
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) {
+                }
             }
-        }, 0, 1000*10);//Time to continue;
+        };
+        GPSUpdater.start();
     }
     public void endSession(View view) {
         moveTaskToBack(false);
         currentTrack.saveToFile(this);
-        GPSUpdater.cancel();
+        GPSUpdater.interrupt();
         finish();
     }
 }

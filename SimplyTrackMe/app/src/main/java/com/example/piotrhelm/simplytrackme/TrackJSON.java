@@ -18,13 +18,13 @@ public class TrackJSON {
         toJSON(track);
     }
 
-    private static void toJSON(Track track_in) {
+    static void toJSON(Track track_in) {
         Gson gson = new Gson();
         String json = gson.toJson(track_in);
         System.out.println(json);
     };
 
-    private static Track createDummyTrack() {
+    static Track createDummyTrack() {
         Track track = new Track();
         track.setEnd_date(12209292);
         track.setId(12);
