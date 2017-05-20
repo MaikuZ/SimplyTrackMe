@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.StrictMode;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
@@ -17,6 +18,9 @@ import android.widget.TextView;
 
 import org.w3c.dom.Text;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.Statement;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -121,6 +125,32 @@ public class Start extends AppCompatActivity {
         GPSUpdater.start();
     }
     public void endSession(View view) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        Thread temp = new Thread() {
+            @Override
+            public void run() {
+                Connection c = null;
+                try {
+                    Class.forName("org.postgresql.Driver");
+                    c = DriverManager
+                            .getConnection("jdbc:postgresql://192.168.0.248:5432/stm",
+                                    "stm", "stm");
+                    Statement stmt = c.createStatement(); String sql = "INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) "
+                            + "VALUES (1, 'Paul', 32, 'California', 20000.00 );";
+
+                    stmt.executeUpdate(sql);
+                    stmt.close();
+                    c.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.err.println(e.getClass().getName()+": "+e.getMessage());
+                }
+                System.out.println("Opened database successfully");
+            }
+        };
+        temp.run();
         moveTaskToBack(false);
         currentTrack.saveToFile(this);
         GPSUpdater.interrupt();
