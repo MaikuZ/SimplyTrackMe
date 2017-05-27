@@ -37,7 +37,6 @@ public class Start extends AppCompatActivity {
     private Track currentTrack;
     private Thread GPSUpdater;
     private int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
-    private View myView;
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         return;
