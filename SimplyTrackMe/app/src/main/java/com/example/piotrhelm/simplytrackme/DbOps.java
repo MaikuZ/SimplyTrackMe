@@ -1,6 +1,9 @@
 package com.example.piotrhelm.simplytrackme;
 
+import android.app.AlertDialog;
+import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v7.app.AppCompatActivity;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -11,7 +14,8 @@ import java.sql.Statement;
  * Created by bartek on 27.05.17.
  */
 
-public class DbOps {
+public class DbOps extends AppCompatActivity {
+    static AppCompatActivity referenceToApp = null;
     private static class DeleteTask extends AsyncTask<Track, Void, Void> {
         @Override
         protected Void doInBackground(Track... params) {
@@ -37,16 +41,16 @@ public class DbOps {
             return null;
         }
     }
-    private static class UploadTask extends AsyncTask<Track, Void, Void> {
+    private static class UploadTask extends AsyncTask<Track, Void, Boolean> {
         private void fillTables(Connection c, Track t) throws SQLException {
             Statement stmt = c.createStatement();
             String sql = "INSERT INTO COMPANY (id, NAME,AGE,ADDRESS,SALARY) "
-                    + "VALUES (10, '" + t.getOwner().name + "', 32, 'California', 20000.00 );";
+                    + "VALUES (15, '" + t.getOwner().name + "', 32, 'California', 20000.00 );";
             stmt.executeUpdate(sql);
             stmt.close();
         }
         @Override
-        protected Void doInBackground(Track... params) {
+        protected Boolean doInBackground(Track... params) {
             Connection c = null;
             Track t;
             if (params.length == 0)
@@ -55,6 +59,7 @@ public class DbOps {
                 t = params[0];
             try {
                 Class.forName("org.postgresql.Driver");
+                DriverManager.setLoginTimeout(3);
                 c = DriverManager
                         .getConnection("jdbc:postgresql://192.168.43.37:5432/stm",
                                 "stm", "stm");
@@ -62,11 +67,24 @@ public class DbOps {
                 c.close();
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
+                return new Boolean(false);
             } catch (SQLException e) {
                 e.printStackTrace();
+                return new Boolean(false);
+            } catch (Exception e) {
+                return new Boolean(false);
             }
             System.out.println("Opened database successfully");
-            return null;
+            return new Boolean(true);
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(referenceToApp);
+            alertDialog.setTitle("SQL transfer");
+            alertDialog.setMessage(aBoolean ? "Sent succesfully." : "Failure sending data.");
+            alertDialog.show();
+            super.onPostExecute(aBoolean);
         }
     }
     public static void DeleteTrack(Track track) {

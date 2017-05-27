@@ -25,6 +25,7 @@ public class trackDetailsView extends AppCompatActivity {
         startActivity(intent);
     }
     public void onSendToServer(View view) {
+        DbOps.referenceToApp = this;
         DbOps.UploadTrack(currentTrack);
     }
     @Override
