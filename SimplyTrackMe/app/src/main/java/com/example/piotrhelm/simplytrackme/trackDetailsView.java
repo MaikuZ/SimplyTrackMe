@@ -1,5 +1,8 @@
 package com.example.piotrhelm.simplytrackme;
 
+import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,8 +12,10 @@ import android.widget.TextView;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class trackDetailsView extends AppCompatActivity {
@@ -24,10 +29,31 @@ public class trackDetailsView extends AppCompatActivity {
         MapsActivity.trackToShow = currentTrack;
         startActivity(intent);
     }
+    @SuppressLint("NewApi")
+    public void onDeleteLocally(View view) {
+        File f = new File(currentTrack.getID() + ".json");
+        AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
+        if(f.delete()) {
+            alertDialog.setTitle("File deleted");
+            alertDialog.setMessage("Deleted.");
+        }
+        else {
+            alertDialog.setTitle("File not deleted");
+            alertDialog.setMessage("Couldn't delete.");
+        }
+        alertDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+                finish();
+            }
+        });
+
+        alertDialog.show();
+    }
     public void onSendToServer(View view) {
-        DbOps.referenceToApp = this;
         DbOps.UploadTrack(currentTrack);
     }
+        DbOps.referenceToApp = this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,7 +68,7 @@ public class trackDetailsView extends AppCompatActivity {
         }
         BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
         StringBuilder total = new StringBuilder();
-        String line = new String();
+        String line;
         try {
             while ((line = r.readLine()) != null) {
                 total.append(line);
