@@ -118,32 +118,6 @@ public class Start extends AppCompatActivity {
         GPSUpdater.start();
     }
     public void endSession(View view) {
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
-
-        Thread temp = new Thread() {
-            @Override
-            public void run() {
-                Connection c = null;
-                try {
-                    Class.forName("org.postgresql.Driver");
-                    c = DriverManager
-                            .getConnection("jdbc:postgresql://192.168.0.248:5432/stm",
-                                    "stm", "stm");
-                    Statement stmt = c.createStatement(); String sql = "INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) "
-                            + "VALUES (1, 'Paul', 32, 'California', 20000.00 );";
-
-                    stmt.executeUpdate(sql);
-                    stmt.close();
-                    c.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    System.err.println(e.getClass().getName()+": "+e.getMessage());
-                }
-                System.out.println("Opened database successfully");
-            }
-        };
-        temp.run();
         moveTaskToBack(false);
         currentTrack.saveToFile(this);
         GPSUpdater.interrupt();
