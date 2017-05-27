@@ -54,12 +54,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             List.add(e);
         }
 
-        LatLng marker = new LatLng(trackToShow.getLast().getLat(),trackToShow.getLast().getLon());
-        mMap.addMarker(new MarkerOptions().position(marker).title("Tu jesteś!!!"));
-
         PolylineOptions polylineOptions = new PolylineOptions();
 
-// Create polyline options with existing LatLng ArrayList
+        // Create polyline options with existing LatLng ArrayList
         polylineOptions.addAll(List);
         polylineOptions
                 .width(5)
@@ -67,6 +64,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         mMap.addPolyline(polylineOptions);
 
+        LatLng marker = new LatLng(trackToShow.getLast().getLat(),trackToShow.getLast().getLon());
+        mMap.addMarker(new MarkerOptions().position(marker));
+        mMap.setMinZoomPreference(14.0f);
+        mMap.setMaxZoomPreference(14.0f);
         mMap.moveCamera(CameraUpdateFactory.newLatLng(marker));
     }
 }
