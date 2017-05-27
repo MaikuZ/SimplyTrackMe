@@ -6,12 +6,19 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.preference.PreferenceManager;
+import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+import java.sql.Connection;
+import java.sql.Statement;
+import java.sql.DriverManager;
 import java.util.Calendar;
 
 public class Start extends AppCompatActivity {
@@ -24,7 +31,6 @@ public class Start extends AppCompatActivity {
     private Track currentTrack;
     private Thread GPSUpdater;
     private int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
-    private View myView;
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         return;
@@ -79,6 +85,12 @@ public class Start extends AppCompatActivity {
             alertDialog.show();
         }
         currentTrack = new Track();
+        currentTrack.setOwner(new Person(
+                PreferenceManager.getDefaultSharedPreferences(this).getString("person_name", "none"),
+                Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("person_age", "0")),
+                Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("person_height", "0")),
+                Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("person_weight", "0"))
+        ));
         GPSUpdater = new Thread() {
             @Override
             public void run() {
@@ -106,6 +118,32 @@ public class Start extends AppCompatActivity {
         GPSUpdater.start();
     }
     public void endSession(View view) {
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
+
+        Thread temp = new Thread() {
+            @Override
+            public void run() {
+                Connection c = null;
+                try {
+                    Class.forName("org.postgresql.Driver");
+                    c = DriverManager
+                            .getConnection("jdbc:postgresql://192.168.0.248:5432/stm",
+                                    "stm", "stm");
+                    Statement stmt = c.createStatement(); String sql = "INSERT INTO COMPANY (ID,NAME,AGE,ADDRESS,SALARY) "
+                            + "VALUES (1, 'Paul', 32, 'California', 20000.00 );";
+
+                    stmt.executeUpdate(sql);
+                    stmt.close();
+                    c.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.err.println(e.getClass().getName()+": "+e.getMessage());
+                }
+                System.out.println("Opened database successfully");
+            }
+        };
+        temp.run();
         moveTaskToBack(false);
         currentTrack.saveToFile(this);
         GPSUpdater.interrupt();

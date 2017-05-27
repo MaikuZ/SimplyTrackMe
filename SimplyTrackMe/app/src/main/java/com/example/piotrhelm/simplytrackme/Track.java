@@ -8,6 +8,8 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -20,7 +22,7 @@ import static java.lang.Math.sqrt;
  * Created by mz on 07.05.17.
  */
 
-class Track {
+class Track implements Serializable {
 
     static int lastID = 0;
     static double getDistance(double lat1,double lon1, double lat2, double lon2)
@@ -48,10 +50,19 @@ class Track {
     private long start_date;
     private double totalDistance = 0;
     private long end_date;
+
+    public Person getOwner() {
+        return owner;
+    }
+
     private Person owner;
 
     public double getTotalDistance() {
         return totalDistance;
+    }
+
+    public int getID() {
+        return id;
     }
 
     private class Type {
@@ -154,5 +165,12 @@ class Track {
         }
         if(last != null)
             totalDistance += getDistance(last,temp);
+    }
+    @Override
+    public String toString()
+    {
+        StringBuilder a = new StringBuilder();
+        a.append("Track id: "+id + " Date: " + new Date(start_date).toString() +"\n" + "Total Distance: " + totalDistance/1000 + "km");
+        return a.toString();
     }
 }

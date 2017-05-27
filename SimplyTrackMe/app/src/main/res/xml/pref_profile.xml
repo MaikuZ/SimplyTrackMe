@@ -1,0 +1,34 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="User name"
+        android:inputType="textCapWords"
+        android:key="person_name"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="User name" />
+    <EditTextPreference
+        android:defaultValue="70"
+        android:key="person_height"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Height" />
+    <EditTextPreference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:defaultValue="70"
+        android:key="person_weight"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Weight" />
+    <EditTextPreference
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:defaultValue="70"
+        android:key="person_age"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Age" />
+</PreferenceScreen>
