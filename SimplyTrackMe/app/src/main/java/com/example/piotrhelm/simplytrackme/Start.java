@@ -2,30 +2,24 @@ package com.example.piotrhelm.simplytrackme;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.os.StrictMode;
-import android.preference.PreferenceManager;
+import android.os.Bundle;
 import android.provider.Settings;
+import android.preference.PreferenceManager;
+import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
 import org.w3c.dom.Text;
-
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.Statement;
+import java.sql.DriverManager;
 import java.util.Calendar;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import static android.os.SystemClock.sleep;
 
 public class Start extends AppCompatActivity {
 
@@ -154,5 +148,8 @@ public class Start extends AppCompatActivity {
         currentTrack.saveToFile(this);
         GPSUpdater.interrupt();
         finish();
+        Intent intent = new Intent(this, MapsActivity.class);
+        MapsActivity.trackToShow = currentTrack;
+        startActivity(intent);
     }
 }
