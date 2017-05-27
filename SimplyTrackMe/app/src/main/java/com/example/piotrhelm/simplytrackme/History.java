@@ -1,5 +1,6 @@
 package com.example.piotrhelm.simplytrackme;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.provider.MediaStore;
@@ -82,20 +83,5 @@ public class History extends AppCompatActivity {
         });
         adapter = new ArrayAdapter<Track>(this, R.layout.row_history, trackList);
         list.setAdapter(adapter);
-        /*try {
-            FileInputStream inputStream = openFileInput(filename);
-            BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-            StringBuilder total = new StringBuilder();
-            String line;
-            while ((line = r.readLine()) != null) {
-                total.append(line);
-            }
-            r.close();
-            inputStream.close();
-            Log.d("File", "File contents: " + total);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
-
     }
 }
