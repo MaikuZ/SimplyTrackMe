@@ -24,6 +24,9 @@ public class trackDetailsView extends AppCompatActivity {
         MapsActivity.trackToShow = currentTrack;
         startActivity(intent);
     }
+    public void onSendToServer(View view) {
+        DbOps.UploadTrack(currentTrack);
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
