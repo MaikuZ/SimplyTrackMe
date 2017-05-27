@@ -8,12 +8,9 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
-import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
-import static com.example.piotrhelm.simplytrackme.TrackJSON.toJSON;
 import static java.lang.Math.atan2;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -132,6 +129,11 @@ class Track {
             return null;
         return List.get(List.size()-1);
     }
+
+    public ArrayList<Node> getList(){
+        return List;
+    }
+
     private ArrayList<Person> Participents;
     Track() {
         List = new ArrayList<>();
