@@ -6,19 +6,13 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.preference.PreferenceManager;
-import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
-import org.w3c.dom.Text;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.sql.DriverManager;
 import java.util.Calendar;
 
 public class Start extends AppCompatActivity {
@@ -121,9 +115,10 @@ public class Start extends AppCompatActivity {
         moveTaskToBack(false);
         currentTrack.saveToFile(this);
         GPSUpdater.interrupt();
+
+        Intent myIntent = new Intent(view.getContext(), trackDetailsView.class);
+        myIntent.putExtra("fileName", currentTrack.getID() + ".json");
+        startActivityForResult(myIntent, 0);
         finish();
-        Intent intent = new Intent(this, MapsActivity.class);
-        MapsActivity.trackToShow = currentTrack;
-        startActivity(intent);
     }
 }

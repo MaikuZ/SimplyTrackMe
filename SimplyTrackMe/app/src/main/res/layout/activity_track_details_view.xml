@@ -25,6 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginRight="31dp"
         android:layout_marginTop="8dp"
+        android:onClick="goToMapsView"
         android:text="View on Maps"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView2" />

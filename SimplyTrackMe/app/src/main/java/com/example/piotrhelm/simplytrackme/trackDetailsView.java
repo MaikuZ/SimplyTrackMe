@@ -1,8 +1,9 @@
 package com.example.piotrhelm.simplytrackme;
 
-import android.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
@@ -17,6 +18,11 @@ public class trackDetailsView extends AppCompatActivity {
     Track currentTrack;
     private void updateTextView(String newText,TextView textView) {
         textView.setText(newText);
+    }
+    public void goToMapsView(View view) {
+        Intent intent = new Intent(this, MapsActivity.class);
+        MapsActivity.trackToShow = currentTrack;
+        startActivity(intent);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
