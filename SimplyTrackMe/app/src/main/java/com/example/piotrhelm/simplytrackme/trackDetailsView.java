@@ -51,6 +51,7 @@ public class trackDetailsView extends AppCompatActivity {
         alertDialog.show();
     }
     public void onSendToServer(View view) {
+        DbOps.referenceToApp = this;
         DbOps.UploadTrack(currentTrack);
     }
     @Override
