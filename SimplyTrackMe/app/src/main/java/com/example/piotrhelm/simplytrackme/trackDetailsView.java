@@ -53,7 +53,6 @@ public class trackDetailsView extends AppCompatActivity {
     public void onSendToServer(View view) {
         DbOps.UploadTrack(currentTrack);
     }
-        DbOps.referenceToApp = this;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

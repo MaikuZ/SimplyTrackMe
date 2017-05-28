@@ -82,7 +82,7 @@ class GPSTracker extends Service implements LocationListener {
                 }
                 // if GPS Enabled get lat/long using GPS Services
                 if (isGPSOn) {
-                    if (location == null) {
+                    if (true) {
                         //noinspection MissingPermission
                         locationManager.requestLocationUpdates(
                                 LocationManager.GPS_PROVIDER,

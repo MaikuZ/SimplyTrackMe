@@ -35,7 +35,6 @@
         android:layout_width="149dp"
         android:layout_height="50dp"
         android:layout_marginLeft="29dp"
-        android:layout_marginTop="6dp"
         android:onClick="onSendToServer"
         android:layout_marginTop="8dp"
         android:text="Send to Server"
