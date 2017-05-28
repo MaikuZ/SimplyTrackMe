@@ -1,0 +1,18 @@
+1) Cut polylines shown in Google Maps into 1 km's parts.
+2) Fix in GPStracker
+	a) Add to track two fields eleveation and accuracy
+	accuracy is a int from 0 to 10 which tells us how
+	accurate the node is. It will be needed to 
+	fix the track afterwards.
+	Elevation is needed for the track stats.
+	b) Create a method that 'fixes' the route in runtime
+	c) Create a method that 'fixes' the route after a session
+3) Delete File Locally should work and it should invoke Delete File from server.
+4) Delete File from server should send a request to delete a record from the database.
+5) Add an option to add friends to your training session.
+6) Write a method in Track to extract neat stats.
+7) Find a way to present the track in graph. Pace/time.
+8) Calculate kcal's based on the personal info.
+9) Get personal info from server and if changed send an update to server.
+10) Add friends.
+11) Change your login and password in app.
