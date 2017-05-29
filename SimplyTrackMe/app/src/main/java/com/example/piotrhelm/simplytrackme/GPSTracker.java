@@ -35,7 +35,7 @@ class GPSTracker extends Service implements LocationListener {
     double lat;
     double lon;
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;//IN METERS
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // IN miliseconds; Currently one minute
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 1 * 1; // IN miliseconds; Currently one minute
 
     protected LocationManager locationManager;
     private AlertDialog.Builder alertDialog;
@@ -44,6 +44,21 @@ class GPSTracker extends Service implements LocationListener {
     public GPSTracker(Context context) {
         this.mContext = context;
         getLocation();
+    }
+    public Location getUpdatedLocation() {
+        if(locationManager == null)
+            return null;
+        //noinspection MissingPermission
+        Location newLocation = locationManager.getLastKnownLocation(locationManager.GPS_PROVIDER);
+        if(newLocation == null)//noinspection MissingPermission
+            newLocation = locationManager.getLastKnownLocation(locationManager.NETWORK_PROVIDER);
+        if(newLocation != null)
+            location = newLocation;
+        if(location != null) {
+            lat = location.getLatitude();
+            lon = location.getLongitude();
+        }
+        return location;
     }
     public Location getLocation() {
         try {
@@ -90,9 +105,12 @@ class GPSTracker extends Service implements LocationListener {
                                 MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
                         Log.d("GPS Enabled", "GPS Enabled");
                         if (locationManager != null) {
+                            Location temp = location;
                             //noinspection MissingPermission
                             location = locationManager
                                     .getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                            if(location == null)
+                                location = temp;
                             if (location != null) {
                                 lat = location.getLatitude();
                                 lon = location.getLongitude();

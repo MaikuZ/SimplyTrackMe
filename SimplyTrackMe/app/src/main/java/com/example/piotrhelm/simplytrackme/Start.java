@@ -94,11 +94,11 @@ public class Start extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                tracker.getLocation();
+                                tracker.getUpdatedLocation();
                                 currentTrack.addNode(tracker.getLat(),tracker.getLon(), Calendar.getInstance().getTime().getTime());
                                 updateTextView("Current Distance: " +
                                         currentTrack.getTotalDistance()/1000 + " km" + "\n" +
-                                        "Current Location: " + tracker.getLocation() + "\n" +
+                                        "Current Location: " + tracker.getUpdatedLocation() + "\n" +
                                         "Track: " + currentTrack.toJSON(currentTrack)
                                         ,currentStats
                                 );
