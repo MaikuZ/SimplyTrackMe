@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project name="Dziennik aktywności fizycznej" id="Project_2cc95ad2" template="Default" database="PostgreSQL" >
 	<schema name="simplytrackme" schemaname="simplytrackme" >
+		<table name="competition" >
+			<column name="id_competition" type="serial" jt="4" mandatory="y" />
+			<column name="name" type="varchar" length="32" jt="12" mandatory="y" />
+			<column name="place" type="varchar" length="32" jt="12" mandatory="y" />
+			<column name="event_date" type="date" jt="91" mandatory="y" />
+			<column name="id_type" type="serial" jt="4" />
+			<column name="distance" type="numeric" length="8" decimal="2" jt="2" mandatory="y" />
+			<index name="pk_competition" unique="PRIMARY_KEY" >
+				<column name="id_competition" />
+			</index>
+			<index name="idx_competition" unique="NORMAL" >
+				<column name="id_type" />
+			</index>
+			<fk name="fk_competition" to_schema="simplytrackme" to_table="type_workout" >
+				<fk_column name="id_type" pk="id_type" />
+			</fk>
+		</table>
 		<table name="friends" generator_rows="100" >
 			<column name="id_user" type="integer" jt="4" mandatory="y" />
 			<column name="id_friend" type="integer" jt="4" mandatory="y" />
@@ -10,9 +27,89 @@
 			<index name="idx_znajomi" unique="NORMAL" >
 				<column name="id_friend" />
 			</index>
+			<constraint name="ck_0" >
+				<string>id_user &lt; id_friend</string>
+				<comment><![CDATA[don't allow redundancy.
+If a is friend with b, so is b with a.]]></comment>
+			</constraint>
 			<fk name="fk_znajomi" to_schema="simplytrackme" to_table="users" >
 				<fk_column name="id_friend" pk="id_user" />
 			</fk>
+		</table>
+		<table name="group" >
+			<column name="id_group" type="serial" jt="4" mandatory="y" />
+			<column name="name" type="varchar" length="32" jt="12" mandatory="y" />
+			<column name="private" type="bool" jt="-7" mandatory="y" >
+				<comment><![CDATA[determine whether the group ought be private or public]]></comment>
+			</column>
+			<index name="pk_group" unique="PRIMARY_KEY" >
+				<column name="id_group" />
+			</index>
+		</table>
+		<table name="group_members" >
+			<column name="id_user" type="integer" jt="4" mandatory="y" />
+			<column name="id_group" type="integer" jt="4" mandatory="y" />
+			<index name="idx_group_members" unique="PRIMARY_KEY" >
+				<column name="id_user" />
+				<column name="id_group" />
+			</index>
+			<index name="idx_group_members_0" unique="NORMAL" >
+				<column name="id_group" />
+			</index>
+			<index name="idx_group_members_1" unique="NORMAL" >
+				<column name="id_user" />
+			</index>
+			<fk name="fk_group_members" to_schema="simplytrackme" to_table="group" >
+				<fk_column name="id_group" pk="id_group" />
+			</fk>
+			<fk name="fk_group_members_0" to_schema="simplytrackme" to_table="users" >
+				<fk_column name="id_user" pk="id_user" />
+			</fk>
+		</table>
+		<table name="node" >
+			<comment><![CDATA[node]]></comment>
+			<column name="id_node" type="serial" jt="4" mandatory="y" />
+			<column name="lat" type="numeric" length="12" decimal="10" jt="2" mandatory="y" />
+			<column name="lon" type="numeric" length="12" decimal="10" jt="2" mandatory="y" />
+			<column name="total_distance" type="numeric" length="4" decimal="1" jt="2" mandatory="y" />
+			<column name="duration" type="numeric" length="8" decimal="2" jt="2" mandatory="y" >
+				<comment><![CDATA[in minutes]]></comment>
+			</column>
+			<column name="elevation" type="numeric" length="4" decimal="1" jt="2" mandatory="y" >
+				<defo>0</defo>
+				<comment><![CDATA[meters]]></comment>
+			</column>
+			<index name="pk_node" unique="PRIMARY_KEY" >
+				<column name="id_node" />
+			</index>
+		</table>
+		<table name="participants" >
+			<column name="id_competition" type="integer" jt="4" mandatory="y" />
+			<column name="id_user" type="integer" jt="4" mandatory="y" />
+			<column name="time_result" type="numeric" jt="2" mandatory="y" />
+			<index name="pkey_contestants" unique="PRIMARY_KEY" >
+				<column name="id_competition" />
+				<column name="id_user" />
+			</index>
+			<index name="idx_contestants" unique="NORMAL" >
+				<column name="id_competition" />
+			</index>
+			<index name="idx_contestants_0" unique="NORMAL" >
+				<column name="id_user" />
+			</index>
+			<fk name="fk_contestants" to_schema="simplytrackme" to_table="competition" >
+				<fk_column name="id_competition" pk="id_competition" />
+			</fk>
+			<fk name="fk_contestants_0" to_schema="simplytrackme" to_table="users" >
+				<fk_column name="id_user" pk="id_user" />
+			</fk>
+		</table>
+		<table name="route" >
+			<column name="name" type="varchar" length="100" jt="12" mandatory="y" />
+			<column name="id_route" type="serial" jt="4" mandatory="y" />
+			<index name="pk_route" unique="PRIMARY_KEY" >
+				<column name="id_route" />
+			</index>
 		</table>
 		<table name="session" generator_rows="150" >
 			<column name="id_session" type="serial" jt="4" mandatory="y" />
@@ -25,6 +122,7 @@
 			</column>
 			<column name="elevation" type="float8" jt="6" mandatory="y" />
 			<column name="id_owner" type="integer" jt="4" mandatory="y" />
+			<column name="id_route" type="integer" jt="4" />
 			<index name="pk_trening/sesja" unique="PRIMARY_KEY" >
 				<column name="id_session" />
 			</index>
@@ -34,20 +132,34 @@
 			<index name="pk_session" unique="UNIQUE" >
 				<column name="id_owner" />
 			</index>
+			<index name="idx_session" unique="NORMAL" >
+				<column name="id_route" />
+			</index>
+			<constraint name="ck_2" >
+				<string>begin_time&lt;end_time</string>
+			</constraint>
 			<fk name="typ_treningu" to_schema="simplytrackme" to_table="type_workout" delete_action="setNull" >
 				<fk_column name="type" pk="id_type" />
 			</fk>
 			<fk name="fk_trening/sesja" to_schema="simplytrackme" to_table="track" >
 				<fk_column name="id_session" pk="id_session" />
 			</fk>
+			<fk name="fk_session" to_schema="simplytrackme" to_table="route" >
+				<fk_column name="id_route" pk="id_route" />
+			</fk>
 		</table>
 		<table name="track" generator_rows="100" >
-			<column name="segment" type="integer" jt="4" mandatory="y" />
-			<column name="time" type="time" jt="92" mandatory="y" />
 			<column name="id_session" type="integer" jt="4" mandatory="y" />
+			<column name="id_node" type="integer" jt="4" mandatory="y" />
 			<index name="pk_track_0" unique="UNIQUE" >
 				<column name="id_session" />
 			</index>
+			<index name="idx_track" unique="NORMAL" >
+				<column name="id_node" />
+			</index>
+			<fk name="fk_track" to_schema="simplytrackme" to_table="node" >
+				<fk_column name="id_node" pk="id_node" />
+			</fk>
 		</table>
 		<table name="type_workout" generator_rows="100" >
 			<column name="id_type" type="serial" length="50" jt="4" mandatory="y" />
@@ -76,9 +188,24 @@
 			<column name="id_user" type="serial" jt="4" mandatory="y" />
 			<column name="user_name" type="varchar" length="20" jt="12" mandatory="y" />
 			<column name="join_date" type="time" jt="92" />
+			<column name="weight" type="numeric" length="4" decimal="1" jt="2" mandatory="y" >
+				<defo>80</defo>
+			</column>
+			<column name="height" type="numeric" length="3" jt="2" mandatory="y" >
+				<defo>160</defo>
+			</column>
+			<column name="sex" type="char" length="1" jt="1" mandatory="y" >
+				<defo>f</defo>
+			</column>
+			<column name="age" type="numeric" length="2" jt="2" mandatory="y" >
+				<defo>18</defo>
+			</column>
 			<index name="pk_użytkownicy" unique="PRIMARY_KEY" >
 				<column name="id_user" />
 			</index>
+			<constraint name="ck_1" >
+				<string>sex like &#039;f&#039; or sex like &#039;m&#039;</string>
+			</constraint>
 			<fk name="fk_users" to_schema="simplytrackme" to_table="friends" >
 				<fk_column name="id_user" pk="id_user" />
 			</fk>
@@ -90,14 +217,20 @@
 			</fk>
 		</table>
 	</schema>
-	<connector name="" database="MySql" host="localhost" port="3306" user="root" />
+	<connector name="PostgreSQL" database="PostgreSQL" driver_class="org.postgresql.Driver" driver_jar="postgresql-42.0.0.jre6.jar" driver_desc="Standard" host="localhost" port="5432" instance="postgres" user="postgres" />
 	<layout name="Default Layout" id="Layout_25c233cd" show_relation="columns" >
-		<entity schema="simplytrackme" name="track" color="c1d8ee" x="765" y="375" />
-		<entity schema="simplytrackme" name="friends" color="c1d8ee" x="45" y="405" />
-		<entity schema="simplytrackme" name="user_session" color="1f5182" x="420" y="45" />
-		<entity schema="simplytrackme" name="type_workout" color="c1d8ee" x="750" y="90" />
-		<entity schema="simplytrackme" name="users" color="c1d8ee" x="45" y="60" />
-		<entity schema="simplytrackme" name="session" color="c1d8ee" x="300" y="225" />
+		<entity schema="simplytrackme" name="group" color="c1d8ee" x="1008" y="80" />
+		<entity schema="simplytrackme" name="group_members" color="c1d8ee" x="224" y="48" />
+		<entity schema="simplytrackme" name="friends" color="c1d8ee" x="64" y="640" />
+		<entity schema="simplytrackme" name="users" color="c1d8ee" x="48" y="176" />
+		<entity schema="simplytrackme" name="user_session" color="1f5182" x="496" y="304" />
+		<entity schema="simplytrackme" name="track" color="c1d8ee" x="768" y="608" />
+		<entity schema="simplytrackme" name="node" color="c1d8ee" x="1152" y="640" />
+		<entity schema="simplytrackme" name="session" color="c1d8ee" x="288" y="512" />
+		<entity schema="simplytrackme" name="competition" color="c1d8ee" x="768" y="224" />
+		<entity schema="simplytrackme" name="participants" color="c1d8ee" x="496" y="128" />
+		<entity schema="simplytrackme" name="type_workout" color="c1d8ee" x="976" y="288" />
+		<entity schema="simplytrackme" name="route" color="c1d8ee" x="1136" y="512" />
 		<script name="Sql" id="Query_143b80d" language="SQL" >
 			<string><![CDATA[CREATE SCHEMA "dziennik aktywności fizycznej";
 
