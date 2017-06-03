@@ -29,9 +29,11 @@ public class trackDetailsView extends AppCompatActivity {
         MapsActivity.trackToShow = currentTrack;
         startActivity(intent);
     }
+
+
     @SuppressLint("NewApi")
     public void onDeleteLocally(View view) {
-        File f = new File(currentTrack.getID() + ".json");
+        File f = new File(this.getFilesDir(),currentTrack.getID() + ".json");
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
         if(f.delete()) {
             alertDialog.setTitle("File deleted");
@@ -47,9 +49,9 @@ public class trackDetailsView extends AppCompatActivity {
                 finish();
             }
         });
-
         alertDialog.show();
     }
+
     public void onSendToServer(View view) {
         DbOps.referenceToApp = this;
         DbOps.UploadTrack(currentTrack);
