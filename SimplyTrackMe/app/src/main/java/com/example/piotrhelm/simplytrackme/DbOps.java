@@ -3,9 +3,11 @@ package com.example.piotrhelm.simplytrackme;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -28,8 +30,8 @@ public class DbOps extends AppCompatActivity {
             try {
                 Class.forName("org.postgresql.Driver");
                 c = DriverManager
-                        .getConnection("jdbc:postgresql://192.168.43.37:5432/stm",
-                                "stm", "stm");
+                        .getConnection("jdbc:postgresql://23160.p.tld.pl:5432/pg23160_1",
+                                "pg23160_1", PreferenceManager.getDefaultSharedPreferences(referenceToApp).getString("password", "none"));
                 /* add SQL requests */
                 c.close();
             } catch (ClassNotFoundException e) {
@@ -44,8 +46,9 @@ public class DbOps extends AppCompatActivity {
     private static class UploadTask extends AsyncTask<Track, Void, Boolean> {
         private void fillTables(Connection c, Track t) throws SQLException {
             Statement stmt = c.createStatement();
-            String sql = "INSERT INTO COMPANY (id, NAME,AGE,ADDRESS,SALARY) "
-                    + "VALUES (15, '" + t.getOwner().name + "', 32, 'California', 20000.00 );";
+            String sql ="INSERT INTO simplytrackme.session (type,route, begin_time, end_time, distance, elevation, id_owner)\n" +
+                    "VALUES (1,'autom.'," +"to_timestamp("+new Date(t.getStart_date()).getTime()+"),"
+                    +"to_timestamp("+new Date(t.getEnd_date()).getTime()+")" + ","+ new Double(t.getTotalDistance()).intValue()+",100,(select id_user from simplytrackme.users where user_name like'" +t.getOwner().user_name +"'));";
             stmt.executeUpdate(sql);
             stmt.close();
         }
@@ -61,8 +64,8 @@ public class DbOps extends AppCompatActivity {
                 Class.forName("org.postgresql.Driver");
                 DriverManager.setLoginTimeout(3);
                 c = DriverManager
-                        .getConnection("jdbc:postgresql://192.168.43.37:5432/stm",
-                                "stm", "stm");
+                        .getConnection("jdbc:postgresql://23160.p.tld.pl:5432/pg23160_1",
+                                "pg23160_1", PreferenceManager.getDefaultSharedPreferences(referenceToApp).getString("password", "none"));
                 fillTables(c, t);
                 c.close();
             } catch (ClassNotFoundException e) {

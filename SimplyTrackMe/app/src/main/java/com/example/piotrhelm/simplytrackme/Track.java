@@ -52,6 +52,12 @@ class Track implements Serializable {
     private double totalDistance = 0;
     private long end_date;
 
+    public long getStart_date(){
+        return start_date;
+    }
+    public long getEnd_date(){
+        return end_date;
+    }
     public Person getOwner() {
         return owner;
     }
@@ -171,7 +177,9 @@ class Track implements Serializable {
     public String toString()
     {
         StringBuilder a = new StringBuilder();
-        a.append("Track id: "+id + " Date: " + new Date(start_date).toString() +"\n" + "Total Distance: " + totalDistance/1000 + "km");
+        a.append("Track id: "+id + " Start Date: " + new Date(start_date).toString() +"\n"
+                +"End Date: " + new Date(end_date).toString() + "\n"
+                +"Total Distance: " + totalDistance/1000 + "km" + "\n");
         return a.toString();
     }
 }

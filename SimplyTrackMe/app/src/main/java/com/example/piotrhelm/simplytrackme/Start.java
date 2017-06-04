@@ -81,6 +81,7 @@ public class Start extends AppCompatActivity {
         currentTrack = new Track();
         currentTrack.setOwner(new Person(
                 PreferenceManager.getDefaultSharedPreferences(this).getString("person_name", "none"),
+                PreferenceManager.getDefaultSharedPreferences(this).getString("user_name", "none"),
                 Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("person_age", "0")),
                 Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("person_height", "0")),
                 Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("person_weight", "0"))
@@ -113,6 +114,7 @@ public class Start extends AppCompatActivity {
     }
     public void endSession(View view) {
         moveTaskToBack(false);
+        currentTrack.setEnd_date(currentTrack.getStart_date() + currentTrack.getLast().getTime_elapsed());
         currentTrack.saveToFile(this);
         GPSUpdater.interrupt();
 

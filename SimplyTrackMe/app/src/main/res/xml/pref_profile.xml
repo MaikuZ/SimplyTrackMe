@@ -2,15 +2,33 @@
 
     <EditTextPreference
         android:capitalize="words"
-        android:defaultValue="User name"
+        android:defaultValue="Name"
         android:inputType="textCapWords"
         android:key="person_name"
         android:maxLines="1"
         android:selectAllOnFocus="true"
         android:singleLine="true"
+        android:title="Name" />
+    <EditTextPreference
+        android:capitalize="words"
+        android:defaultValue="user_name"
+        android:inputType="textCapWords"
+        android:key="user_name"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
         android:title="User name" />
     <EditTextPreference
-        android:defaultValue="70"
+        android:capitalize="words"
+        android:defaultValue="noPassword"
+        android:inputType="textCapWords"
+        android:key="password"
+        android:maxLines="1"
+        android:selectAllOnFocus="true"
+        android:singleLine="true"
+        android:title="Password" />
+    <EditTextPreference
+        android:defaultValue="180"
         android:key="person_height"
         android:selectAllOnFocus="true"
         android:singleLine="true"
@@ -26,7 +44,7 @@
     <EditTextPreference
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:defaultValue="70"
+        android:defaultValue="20"
         android:key="person_age"
         android:selectAllOnFocus="true"
         android:singleLine="true"

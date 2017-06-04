@@ -14,6 +14,7 @@ class Person {
         this.name = name;
     }
     String name;
+    String user_name;///unique name!!!
     Integer age;
     Integer height;
     Integer weight;
@@ -25,5 +26,13 @@ class Person {
         this.height = height;
         this.weight = weight;
     }
+    public Person(String name, String user_name, Integer age, Integer height, Integer weight) {
+        this.name = name;
+        this.user_name = user_name;
+        this.age = age;
+        this.height = height;
+        this.weight = weight;
+    }
 }
+
 
