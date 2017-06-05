@@ -46,9 +46,10 @@ public class DbOps extends AppCompatActivity {
     private static class UploadTask extends AsyncTask<Track, Void, Boolean> {
         private void fillTables(Connection c, Track t) throws SQLException {
             Statement stmt = c.createStatement();
-            String sql ="INSERT INTO simplytrackme.session (type,route, begin_time, end_time, distance, elevation, id_owner)\n" +
-                    "VALUES (1,'autom.'," +"to_timestamp("+new Date(t.getStart_date()).getTime()+"),"
+            String sql ="INSERT INTO simplytrackme.session (id_session,type,route, begin_time, end_time, distance, elevation, id_owner)\n" +
+                    "VALUES ((select max(id_session) from simplytrackme.session)+1,1,'autom.'," +"to_timestamp("+new Date(t.getStart_date()).getTime()+"),"
                     +"to_timestamp("+new Date(t.getEnd_date()).getTime()+")" + ","+ new Double(t.getTotalDistance()).intValue()+",100,(select id_user from simplytrackme.users where user_name like'" +t.getOwner().user_name +"'));";
+            //max of id_session is current id.
             stmt.executeUpdate(sql);
             stmt.close();
         }

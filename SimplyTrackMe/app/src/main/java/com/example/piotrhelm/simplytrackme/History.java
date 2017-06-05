@@ -34,11 +34,7 @@ public class History extends AppCompatActivity {
 
     private ListView list;
     private ArrayAdapter<Track> adapter;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_history);
-
+    private void startListView(){//Used to start or refresh listView
         list = (ListView) findViewById(R.id.listView1);
         final ArrayList<Track> trackList = new ArrayList<Track>();
 
@@ -83,5 +79,17 @@ public class History extends AppCompatActivity {
         });
         adapter = new ArrayAdapter<Track>(this, R.layout.row_history, trackList);
         list.setAdapter(adapter);
+    }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_history);
+        startListView();///To start for the first time
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        startListView();///To refresh - because some entries might be deleted.
     }
 }
