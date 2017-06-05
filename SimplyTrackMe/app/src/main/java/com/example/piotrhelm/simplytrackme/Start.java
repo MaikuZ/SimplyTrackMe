@@ -100,8 +100,9 @@ public class Start extends AppCompatActivity {
                                 updateTextView("Current Distance: " +
                                         currentTrack.getTotalDistance()/1000 + " km" + "\n" +
                                         "Current Location: " + tracker.getUpdatedLocation() + "\n" +
-                                        "Track: " + currentTrack.toJSON(currentTrack)
-                                        ,currentStats
+                                        "Current altitude: " + tracker.getAltitude() + "\n"+
+                                        "Elapsed time: " + (Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date())/1000/60 +"minutes"+"\n"+
+                                        "Average speed: " + (currentTrack.getTotalDistance()/1000)/(Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date())*1000*60*60 + "km/h",currentStats
                                 );
                             }
                         });
