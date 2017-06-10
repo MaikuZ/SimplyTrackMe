@@ -109,7 +109,37 @@ public class DbOps extends AppCompatActivity {
             protected void executeQuery(Connection c) throws SQLException {
                 String sql ="INSERT INTO simplytrackme.sessions (id_localsession,id_session,type,id_route, begin_time, end_time, distance, elevation, id_owner)\n" +
                         "VALUES ("+track.getID() + ",coalesce((select max(id_session) from simplytrackme.sessions),0)+1,0,null," +"to_timestamp("+new Date(track.getStart_date()).getTime()/1000+"),"
-                        +"to_timestamp("+new Date(track.getEnd_date()).getTime()/1000+")" + ","+ Double.valueOf(track.getTotalDistance()).intValue()+",100,(select id_user from simplytrackme.users where user_name like'" +track.getOwner().user_name +"'));";
+                        +"to_timestamp("+new Date(track.getEnd_date()).getTime()/1000+")" + ","+ Double.valueOf(track.getTotalDistance()).intValue()
+                        +","+track.getElevation()
+                        +",(select id_user from simplytrackme.users where user_name like'" +track.getOwner().user_name +"'));";
+                long totalDistance = 0;
+                Track.Node lastNode = track.getList().get(0);
+                int id = 0;
+                for(Track.Node x : track.getList()) {
+                    sql += "\n INSERT INTO simplytrackme.nodes (id_node ,lat, lon, total_distance, duration, elevation, id_session) VALUES(" +
+                            +(id++)+","
+                            + x.getLat()+","
+                            +x.getLon()+","
+                            +totalDistance+","
+                            + x.getTime_elapsed() + ","
+                            + x.getAltitude() + ","
+                            +"(SELECT id_session from simplytrackme.sessions" +
+                            " where id_owner = (select id_user from simplytrackme.users where user_name like'"
+                            +track.getOwner().user_name +"')"
+                            + " AND " +
+                            "simplytrackme.sessions.id_localsession ="+ track.getID() +"));\n";
+                    totalDistance += Track.getDistance(lastNode,x);
+                    lastNode = x;
+                }
+                sql += "INSERT INTO simplytrackme.user_sessions (id_user, id_session) VALUES (" +
+                        "(select id_user from simplytrackme.users where user_name like'"
+                        +track.getOwner().user_name +"')"+","
+                        +"(SELECT id_session from simplytrackme.sessions" +
+                        " where id_owner = (select id_user from simplytrackme.users where user_name like'"
+                        +track.getOwner().user_name +"')"
+                        + " AND " +
+                        "simplytrackme.sessions.id_localsession ="+ track.getID() +")"
+                        +")";
                 Statement stmt = c.createStatement();
                 stmt.executeUpdate(sql);
                 isDone = true;
