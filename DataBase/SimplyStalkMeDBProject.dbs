@@ -74,11 +74,13 @@ If a is friend with b, so is b with a.]]></comment>
 			<column name="id_node" type="serial" jt="4" mandatory="y" />
 			<column name="lat" type="numeric" length="12" decimal="10" jt="2" mandatory="y" />
 			<column name="lon" type="numeric" length="12" decimal="10" jt="2" mandatory="y" />
-			<column name="total_distance" type="numeric" length="4" decimal="1" jt="2" mandatory="y" />
-			<column name="duration" type="numeric" length="8" decimal="2" jt="2" mandatory="y" >
-				<comment><![CDATA[in minutes]]></comment>
+			<column name="total_distance" type="numeric" length="10" decimal="0" jt="2" mandatory="y" >
+				<comment><![CDATA[in meters]]></comment>
 			</column>
-			<column name="elevation" type="numeric" length="4" decimal="1" jt="2" mandatory="y" >
+			<column name="duration" type="numeric" length="10" decimal="0" jt="2" mandatory="y" >
+				<comment><![CDATA[in seconds]]></comment>
+			</column>
+			<column name="elevation" type="numeric" length="5" decimal="1" jt="2" mandatory="y" >
 				<defo>0</defo>
 				<comment><![CDATA[meters]]></comment>
 			</column>
@@ -120,13 +122,12 @@ If a is friend with b, so is b with a.]]></comment>
 		<table name="session" generator_rows="150" >
 			<column name="id_session" type="serial" jt="4" mandatory="y" />
 			<column name="type" type="integer" length="50" jt="4" mandatory="y" />
-			<column name="route" type="varchar" length="10" jt="12" mandatory="y" />
-			<column name="begin_time" type="time" jt="92" mandatory="y" />
-			<column name="end_time" type="time" jt="92" mandatory="y" />
-			<column name="distance" type="float8" jt="6" mandatory="y" >
+			<column name="begin_time" type="timestamp" jt="93" mandatory="y" />
+			<column name="end_time" type="timestamp" jt="93" mandatory="y" />
+			<column name="distance" type="numeric" length="10" decimal="0" jt="2" mandatory="y" >
 				<defo>0</defo>
 			</column>
-			<column name="elevation" type="float8" jt="6" mandatory="y" />
+			<column name="elevation" type="numeric" length="5" decimal="0" jt="2" mandatory="y" />
 			<column name="id_owner" type="integer" jt="4" mandatory="y" />
 			<column name="id_route" type="integer" jt="4" />
 			<index name="pk_trening/sesja" unique="PRIMARY_KEY" >
@@ -154,20 +155,26 @@ If a is friend with b, so is b with a.]]></comment>
 				<fk_column name="id_route" pk="id_route" />
 			</fk>
 		</table>
-		<table name="track" generator_rows="100" >
-			<column name="id_session" type="integer" jt="4" mandatory="y" />
-			<column name="id_node" type="integer" jt="4" mandatory="y" />
-			<index name="pk_track_0" unique="UNIQUE" >
-				<column name="id_session" />
+		<table name="type_heartrate_intervals" >
+			<column name="minimum_speed" type="numeric" length="4" decimal="1" jt="2" mandatory="y" />
+			<column name="maximum_speed" type="numeric" length="4" decimal="1" jt="2" />
+			<column name="id_type_heartrate" type="serial" jt="4" mandatory="y" />
+			<column name="id_type" type="integer" jt="4" mandatory="y" />
+			<column name="heartrate" type="numeric" length="3" decimal="0" jt="2" mandatory="y" />
+			<index name="pk_type_heartrate" unique="PRIMARY_KEY" >
+				<column name="id_type_heartrate" />
 			</index>
-			<index name="idx_track" unique="UNIQUE" >
-				<column name="id_node" />
+			<index name="idx_type_heartrate" unique="NORMAL" >
+				<column name="id_type" />
 			</index>
-			<fk name="fk_track_0" to_schema="simplytrackme" to_table="session" >
-				<fk_column name="id_session" pk="id_session" />
+			<constraint name="ck_3" >
+				<string>maximum_speed&gt;minimum_speed</string>
+			</constraint>
+			<fk name="fk_type_heartrate" to_schema="simplytrackme" to_table="type_workouts" delete_action="cascade" >
+				<fk_column name="id_type" pk="id_type" />
 			</fk>
 		</table>
-		<table name="type_workout" generator_rows="100" >
+		<table name="type_workouts" generator_rows="100" >
 			<column name="id_type" type="serial" length="50" jt="4" mandatory="y" />
 			<column name="name" type="varchar" length="100" jt="12" />
 			<index name="pk_typ_treningu" unique="UNIQUE" >
@@ -223,18 +230,20 @@ If a is friend with b, so is b with a.]]></comment>
 	</schema>
 	<connector name="PostgreSQL" database="PostgreSQL" driver_class="org.postgresql.Driver" driver_jar="postgresql-42.0.0.jre6.jar" driver_desc="Standard" host="localhost" port="5432" instance="postgres" user="postgres" />
 	<layout name="Default Layout" id="Layout_25c233cd" show_relation="columns" >
-		<entity schema="simplytrackme" name="group" color="c1d8ee" x="1008" y="80" />
+		<entity schema="simplytrackme" name="routes" color="c1d8ee" x="1136" y="512" />
+		<entity schema="simplytrackme" name="users" color="c1d8ee" x="48" y="176" />
+		<entity schema="simplytrackme" name="groups" color="c1d8ee" x="1008" y="80" />
 		<entity schema="simplytrackme" name="group_members" color="c1d8ee" x="224" y="48" />
 		<entity schema="simplytrackme" name="competition" color="c1d8ee" x="768" y="224" />
 		<entity schema="simplytrackme" name="participants" color="c1d8ee" x="496" y="128" />
 		<entity schema="simplytrackme" name="type_workout" color="c1d8ee" x="976" y="288" />
 		<entity schema="simplytrackme" name="friends" color="c1d8ee" x="64" y="640" />
-		<entity schema="simplytrackme" name="user_session" color="1f5182" x="496" y="304" />
-		<entity schema="simplytrackme" name="track" color="c1d8ee" x="768" y="608" />
-		<entity schema="simplytrackme" name="node" color="c1d8ee" x="1152" y="640" />
-		<entity schema="simplytrackme" name="route" color="c1d8ee" x="1120" y="480" />
-		<entity schema="simplytrackme" name="session" color="c1d8ee" x="288" y="512" />
-		<entity schema="simplytrackme" name="users" color="c1d8ee" x="48" y="176" />
+		<entity schema="simplytrackme" name="user_sessions" color="1f5182" x="496" y="304" />
+		<entity schema="simplytrackme" name="competitions" color="c1d8ee" x="704" y="224" />
+		<entity schema="simplytrackme" name="type_workouts" color="c1d8ee" x="928" y="288" />
+		<entity schema="simplytrackme" name="nodes" color="c1d8ee" x="976" y="624" />
+		<entity schema="simplytrackme" name="sessions" color="c1d8ee" x="288" y="512" />
+		<entity schema="simplytrackme" name="type_heartrate_intervals" color="c1d8ee" x="1120" y="320" />
 		<script name="Sql" id="Query_143b80d" language="SQL" >
 			<string><![CDATA[CREATE SCHEMA "dziennik aktywności fizycznej";
 

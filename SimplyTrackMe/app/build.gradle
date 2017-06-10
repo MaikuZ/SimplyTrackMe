@@ -31,7 +31,7 @@ dependencies {
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.android.support:support-vector-drawable:25.3.1'
-    compile 'com.google.android.gms:play-services-maps:10.2.4'
+    compile 'com.google.android.gms:play-services-maps:10.2.6'
     compile 'postgresql:postgresql:9.1-901-1.jdbc4'
     compile 'com.google.android.gms:play-services-auth:10.2.6'
     testCompile 'junit:junit:4.12'

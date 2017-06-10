@@ -1,13 +1,11 @@
 package com.example.piotrhelm.simplytrackme;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;

@@ -87,11 +87,10 @@ CREATE INDEX idx_contestants_0 ON simplytrackme.participants ( id_user );
 CREATE TABLE simplytrackme."session" ( 
 	id_session           serial  NOT NULL,
 	"type"               integer  NOT NULL,
-	route                varchar(10)  NOT NULL,
-	begin_time           time  NOT NULL,
-	end_time             time  NOT NULL,
-	distance             float8 DEFAULT 0 NOT NULL,
-	elevation            float8  NOT NULL,
+	begin_time           timestamp  NOT NULL,
+	end_time             timestamp  NOT NULL,
+	distance             numeric(10,0) DEFAULT 0 NOT NULL,
+	elevation            numeric(5,0)  NOT NULL,
 	id_owner             integer  NOT NULL,
 	id_route             integer  ,
 	CONSTRAINT "pk_trening/sesja" PRIMARY KEY ( id_session ),
@@ -103,14 +102,20 @@ ALTER TABLE simplytrackme."session" ADD CONSTRAINT ck_2 CHECK ( begin_time<end_t
 
 CREATE INDEX idx_trening_sesja ON simplytrackme."session" ( "type" );
 
-CREATE TABLE simplytrackme.track ( 
-	id_session           integer  NOT NULL,
-	id_node              integer  NOT NULL,
-	CONSTRAINT pk_track_0 UNIQUE ( id_session ) ,
-	CONSTRAINT idx_track UNIQUE ( id_node ) 
+CREATE TABLE simplytrackme.type_heartrate_intervals ( 
+	minimum_speed        numeric(4,1)  NOT NULL,
+	maximum_speed        numeric(4,1)  ,
+	id_type_heartrate    serial  NOT NULL,
+	id_type              integer  NOT NULL,
+	heartrate            numeric(3,0)  NOT NULL,
+	CONSTRAINT pk_type_heartrate PRIMARY KEY ( id_type_heartrate )
  );
 
-CREATE TABLE simplytrackme.user_session ( 
+ALTER TABLE simplytrackme.type_heartrate_intervals ADD CONSTRAINT ck_3 CHECK ( maximum_speed>minimum_speed );
+
+CREATE INDEX idx_type_heartrate ON simplytrackme.type_heartrate_intervals ( id_type );
+
+CREATE TABLE simplytrackme.user_sessions ( 
 	id_user              integer  NOT NULL,
 	id_session           integer  NOT NULL,
 	CONSTRAINT pk_user_session UNIQUE ( id_user ) 
@@ -122,19 +127,22 @@ CREATE TABLE simplytrackme.node (
 	id_node              serial  NOT NULL,
 	lat                  numeric(12,10)  NOT NULL,
 	lon                  numeric(12,10)  NOT NULL,
-	total_distance       numeric(4,1)  NOT NULL,
-	duration             numeric(8,2)  NOT NULL,
-	elevation            numeric(4,1) DEFAULT 0 NOT NULL,
-	CONSTRAINT pk_node PRIMARY KEY ( id_node )
+	total_distance       numeric(10,0)  NOT NULL,
+	duration             numeric(10,0)  NOT NULL,
+	elevation            numeric(5,1) DEFAULT 0 NOT NULL,
+	id_session           integer  NOT NULL,
+	CONSTRAINT idx_nodes PRIMARY KEY ( id_node, id_session )
  );
 
 COMMENT ON TABLE simplytrackme.node IS 'node';
 
 COMMENT ON COLUMN simplytrackme.node.duration IS 'in minutes';
 
-COMMENT ON COLUMN simplytrackme.node.elevation IS 'meters';
+COMMENT ON COLUMN simplytrackme.nodes.total_distance IS 'in meters';
 
-ALTER TABLE simplytrackme.competition ADD CONSTRAINT fk_competition FOREIGN KEY ( id_type ) REFERENCES simplytrackme.type_workout( id_type );
+COMMENT ON COLUMN simplytrackme.nodes.duration IS 'in seconds';
+
+COMMENT ON COLUMN simplytrackme.nodes.elevation IS 'meters';
 
 COMMENT ON CONSTRAINT fk_competition ON simplytrackme.competition IS '';
 
@@ -178,7 +186,11 @@ ALTER TABLE simplytrackme."session" ADD CONSTRAINT fk_session FOREIGN KEY ( id_r
 
 COMMENT ON CONSTRAINT fk_session ON simplytrackme."session" IS '';
 
-ALTER TABLE simplytrackme.track ADD CONSTRAINT fk_track_0 FOREIGN KEY ( id_session ) REFERENCES simplytrackme."session"( id_session );
+ALTER TABLE simplytrackme.type_heartrate_intervals ADD CONSTRAINT fk_type_heartrate FOREIGN KEY ( id_type ) REFERENCES simplytrackme.type_workouts( id_type ) ON DELETE CASCADE;
+
+COMMENT ON CONSTRAINT fk_type_heartrate ON simplytrackme.type_heartrate_intervals IS '';
+
+ALTER TABLE simplytrackme.user_sessions ADD CONSTRAINT fk_user_session FOREIGN KEY ( id_session ) REFERENCES simplytrackme.sessions( id_session ) ON DELETE CASCADE;
 
 COMMENT ON CONSTRAINT fk_track_0 ON simplytrackme.track IS '';
 
