@@ -99,20 +99,13 @@ CREATE TABLE simplytrackme.sessions (
 
 ALTER TABLE simplytrackme.sessions ADD CONSTRAINT ck_2 CHECK ( begin_time<end_time );
 
-CREATE TABLE simplytrackme.tracks ( 
-	id_session           integer  NOT NULL,
-	id_node              integer  NOT NULL,
-	CONSTRAINT pk_track_0 UNIQUE ( id_session ) ,
-	CONSTRAINT idx_track UNIQUE ( id_node ) 
- );
+CREATE INDEX idx_trening_sesja ON simplytrackme.sessions ( "type" );
 
 CREATE TABLE simplytrackme.user_sessions ( 
 	id_user              integer  NOT NULL,
 	id_session           integer  NOT NULL,
-	CONSTRAINT pk_user_session UNIQUE ( id_user ) 
+	CONSTRAINT idx_user_sessions PRIMARY KEY ( id_user, id_session )
  );
-
-CREATE INDEX idx_user_session ON simplytrackme.user_sessions ( id_session );
 
 CREATE TABLE simplytrackme.nodes ( 
 	id_node              serial  NOT NULL,
@@ -121,8 +114,11 @@ CREATE TABLE simplytrackme.nodes (
 	total_distance       numeric(4,1)  NOT NULL,
 	duration             numeric(8,2)  NOT NULL,
 	elevation            numeric(4,1) DEFAULT 0 NOT NULL,
-	CONSTRAINT pk_node PRIMARY KEY ( id_node )
+	id_session           integer  NOT NULL,
+	CONSTRAINT idx_nodes PRIMARY KEY ( id_node, id_session )
  );
+
+CREATE INDEX idx_nodes_0 ON simplytrackme.nodes ( id_session );
 
 COMMENT ON TABLE simplytrackme.nodes IS 'node';
 
@@ -134,31 +130,31 @@ ALTER TABLE simplytrackme.competitions ADD CONSTRAINT fk_competition FOREIGN KEY
 
 COMMENT ON CONSTRAINT fk_competition ON simplytrackme.competitions IS '';
 
-ALTER TABLE simplytrackme.friends ADD CONSTRAINT fk_friends FOREIGN KEY ( id_friend_a ) REFERENCES simplytrackme.users( id_user );
+ALTER TABLE simplytrackme.friends ADD CONSTRAINT fk_friends FOREIGN KEY ( id_friend_a ) REFERENCES simplytrackme.users( id_user ) ON DELETE CASCADE;
 
 COMMENT ON CONSTRAINT fk_friends ON simplytrackme.friends IS '';
 
-ALTER TABLE simplytrackme.friends ADD CONSTRAINT fk_friends_0 FOREIGN KEY ( id_friend_b ) REFERENCES simplytrackme.users( id_user );
+ALTER TABLE simplytrackme.friends ADD CONSTRAINT fk_friends_0 FOREIGN KEY ( id_friend_b ) REFERENCES simplytrackme.users( id_user ) ON DELETE CASCADE;
 
 COMMENT ON CONSTRAINT fk_friends_0 ON simplytrackme.friends IS '';
 
-ALTER TABLE simplytrackme.group_members ADD CONSTRAINT fk_group_members FOREIGN KEY ( id_group ) REFERENCES simplytrackme.groups( id_group );
+ALTER TABLE simplytrackme.group_members ADD CONSTRAINT fk_group_members FOREIGN KEY ( id_group ) REFERENCES simplytrackme.groups( id_group ) ON DELETE CASCADE;
 
 COMMENT ON CONSTRAINT fk_group_members ON simplytrackme.group_members IS '';
 
-ALTER TABLE simplytrackme.group_members ADD CONSTRAINT fk_group_members_0 FOREIGN KEY ( id_user ) REFERENCES simplytrackme.users( id_user );
+ALTER TABLE simplytrackme.group_members ADD CONSTRAINT fk_group_members_0 FOREIGN KEY ( id_user ) REFERENCES simplytrackme.users( id_user ) ON DELETE CASCADE;
 
 COMMENT ON CONSTRAINT fk_group_members_0 ON simplytrackme.group_members IS '';
 
-ALTER TABLE simplytrackme.nodes ADD CONSTRAINT fk_nodes FOREIGN KEY ( id_node ) REFERENCES simplytrackme.tracks( id_node );
+ALTER TABLE simplytrackme.nodes ADD CONSTRAINT fk_nodes FOREIGN KEY ( id_session ) REFERENCES simplytrackme.sessions( id_session ) ON DELETE CASCADE;
 
 COMMENT ON CONSTRAINT fk_nodes ON simplytrackme.nodes IS '';
 
-ALTER TABLE simplytrackme.participants ADD CONSTRAINT fk_contestants FOREIGN KEY ( id_competition ) REFERENCES simplytrackme.competitions( id_competition );
+ALTER TABLE simplytrackme.participants ADD CONSTRAINT fk_contestants FOREIGN KEY ( id_competition ) REFERENCES simplytrackme.competitions( id_competition ) ON DELETE CASCADE;
 
 COMMENT ON CONSTRAINT fk_contestants ON simplytrackme.participants IS '';
 
-ALTER TABLE simplytrackme.participants ADD CONSTRAINT fk_contestants_0 FOREIGN KEY ( id_user ) REFERENCES simplytrackme.users( id_user );
+ALTER TABLE simplytrackme.participants ADD CONSTRAINT fk_contestants_0 FOREIGN KEY ( id_user ) REFERENCES simplytrackme.users( id_user ) ON DELETE CASCADE;
 
 COMMENT ON CONSTRAINT fk_contestants_0 ON simplytrackme.participants IS '';
 
@@ -166,7 +162,7 @@ ALTER TABLE simplytrackme.sessions ADD CONSTRAINT typ_treningu FOREIGN KEY ( "ty
 
 COMMENT ON CONSTRAINT typ_treningu ON simplytrackme.sessions IS '';
 
-ALTER TABLE simplytrackme.sessions ADD CONSTRAINT fk_sessions FOREIGN KEY ( id_owner ) REFERENCES simplytrackme.users( id_user );
+ALTER TABLE simplytrackme.sessions ADD CONSTRAINT fk_sessions FOREIGN KEY ( id_owner ) REFERENCES simplytrackme.users( id_user ) ON DELETE CASCADE;
 
 COMMENT ON CONSTRAINT fk_sessions ON simplytrackme.sessions IS '';
 
@@ -174,15 +170,11 @@ ALTER TABLE simplytrackme.sessions ADD CONSTRAINT fk_sessions_0 FOREIGN KEY ( id
 
 COMMENT ON CONSTRAINT fk_sessions_0 ON simplytrackme.sessions IS '';
 
-ALTER TABLE simplytrackme.tracks ADD CONSTRAINT fk_tracks FOREIGN KEY ( id_session ) REFERENCES simplytrackme.sessions( id_session );
-
-COMMENT ON CONSTRAINT fk_tracks ON simplytrackme.tracks IS '';
-
-ALTER TABLE simplytrackme.user_sessions ADD CONSTRAINT fk_user_session FOREIGN KEY ( id_session ) REFERENCES simplytrackme.sessions( id_session );
+ALTER TABLE simplytrackme.user_sessions ADD CONSTRAINT fk_user_session FOREIGN KEY ( id_session ) REFERENCES simplytrackme.sessions( id_session ) ON DELETE CASCADE;
 
 COMMENT ON CONSTRAINT fk_user_session ON simplytrackme.user_sessions IS '';
 
-ALTER TABLE simplytrackme.user_sessions ADD CONSTRAINT fk_user_sessions FOREIGN KEY ( id_user ) REFERENCES simplytrackme.users( id_user );
+ALTER TABLE simplytrackme.user_sessions ADD CONSTRAINT fk_user_sessions FOREIGN KEY ( id_user ) REFERENCES simplytrackme.users( id_user ) ON DELETE CASCADE;
 
 COMMENT ON CONSTRAINT fk_user_sessions ON simplytrackme.user_sessions IS '';
 
