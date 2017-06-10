@@ -39,7 +39,7 @@
         </activity>
         <activity
             android:name=".Start"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".SettingsActivity"
             android:parentActivityName=".Main">
@@ -64,8 +64,13 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps"></activity>
-        <activity android:name=".trackDetailsView"></activity>
+            android:label="@string/title_activity_maps" />
+        <activity android:name=".trackDetailsView" />
+        <activity android:name=".RankingActivity" />
+        <activity
+            android:name=".RankingDetails"
+            android:label="@string/title_activity_ranking_details"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

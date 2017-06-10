@@ -57,7 +57,7 @@ public class trackDetailsView extends AppCompatActivity {
 
     public void onSendToServer(View view) {
         DbOps.referenceToApp = this;
-        DbOps.UploadTrack(currentTrack);
+        DbOps.UploadTrack(this, currentTrack);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

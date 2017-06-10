@@ -24,6 +24,8 @@ public class DbOps extends AppCompatActivity {
         protected Boolean isDone;
         protected String stringResult;
         protected ResultSet resultSet;
+        static AppCompatActivity referenceToApplication = referenceToApp;
+        Statement stmt;
 
         public Boolean isDone()
         {
@@ -47,7 +49,7 @@ public class DbOps extends AppCompatActivity {
                 DriverManager.setLoginTimeout(3);
                 c = DriverManager
                         .getConnection("jdbc:postgresql://23160.p.tld.pl:5432/pg23160_1",
-                                "pg23160_1", PreferenceManager.getDefaultSharedPreferences(referenceToApp).getString("password", "none"));
+                                "pg23160_1", PreferenceManager.getDefaultSharedPreferences(referenceToApplication).getString("password", "none"));
                 executeQuery(c);
                 c.close();
             } catch (ClassNotFoundException e) {
@@ -66,10 +68,12 @@ public class DbOps extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
-            AlertDialog.Builder alertDialog = new AlertDialog.Builder(referenceToApp);
-            alertDialog.setTitle("SQL transfer");
-            alertDialog.setMessage(stringResult);
-            alertDialog.show();
+            if (aBoolean) {
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(referenceToApplication);
+                alertDialog.setTitle("SQL transfer");
+                alertDialog.setMessage(stringResult);
+                alertDialog.show();
+            }
             super.onPostExecute(aBoolean);
         }
     }
@@ -89,7 +93,7 @@ public class DbOps extends AppCompatActivity {
         };
         t.execute();
     }
-    public static void UploadTrack(final Track track) {
+    public static void UploadTrack(AppCompatActivity c, final Track track) {
         String result;
         UploadTask t = new UploadTask() {
             @Override
@@ -132,7 +136,44 @@ public class DbOps extends AppCompatActivity {
                 isDone = true;
                 stmt.close();
             }
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(referenceToApplication);
+                alertDialog.setTitle("SQL transfer");
+                alertDialog.setMessage(stringResult);
+                alertDialog.show();
+                super.onPostExecute(aBoolean);
+            }
         };
+        t.referenceToApplication = c;
         t.execute();
     }
+    public static void GetRanking(RankingActivity c, final Ranking.RankingOp rankingOp) {
+        ResultSet rs;
+        UploadTask t = new UploadTask() {
+            @Override
+            protected void executeQuery(Connection c) throws SQLException {
+                String sql = "SELECT distance, id_session, u.user_name " +
+                        "FROM simplytrackme.sessions JOIN simplytrackme.users u ON sessions.id_owner = u.id_user" +
+                        " ORDER BY distance DESC;";
+                stmt = c.createStatement();
+                resultSet = stmt.executeQuery(sql);
+                isDone = true;
+            }
+            @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                Ranking r = new Ranking(getResultSet());
+                rankingOp.run(r);
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                super.onPostExecute(aBoolean);
+            }
+        };
+        t.referenceToApplication = c;
+        t.execute();
+    }
+
 }

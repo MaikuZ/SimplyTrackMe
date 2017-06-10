@@ -46,4 +46,8 @@ public class Main extends AppCompatActivity {
         Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
+    public void goToRankings(View view) {
+        Intent intent = new Intent(this, RankingActivity.class);
+        startActivity(intent);
+    }
 }
