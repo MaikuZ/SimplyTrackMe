@@ -18,6 +18,7 @@ import static java.lang.Math.atan2;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.sqrt;
+import static java.lang.StrictMath.abs;
 
 /**
  * Created by mz on 07.05.17.
@@ -50,8 +51,12 @@ class Track implements Serializable {
     private int id;
     private long start_date;
     private double totalDistance = 0;
+    private double elevation = 0;
     private long end_date;
 
+    public double getElevation(){
+        return elevation;
+    }
     public long getStart_date(){
         return start_date;
     }
@@ -125,11 +130,18 @@ class Track implements Serializable {
     public class Node{
         private double lat;
         private double lon;
+        private double altitude;///current meters above the sea.
         private long time_elapsed;///Since the beginning
         Node(double lattitude, double longitude,long time) {
             lat = lattitude;
             lon = longitude;
             time_elapsed = time;
+        }
+        Node(double lattitude, double longitude,long time,double elevation) {
+            lat = lattitude;
+            lon = longitude;
+            time_elapsed = time;
+            altitude = elevation;
         }
         double getLat() {
             return lat;
@@ -137,6 +149,7 @@ class Track implements Serializable {
         double getLon(){
             return lon;
         }
+        double getAltitude() { return altitude;}
         long getTime_elapsed(){
             return time_elapsed;
         }
@@ -158,8 +171,8 @@ class Track implements Serializable {
         start_date = Calendar.getInstance().getTime().getTime();
         id = lastID++;
     }
-    public void addNode(double lat, double lon, long time){
-        Node temp = new Node(lat,lon,time-start_date);
+    public void addNode(double lat, double lon, long time, double altitude){
+        Node temp = new Node(lat,lon,time-start_date,altitude);
         Node last = getLast();
         if(last == null)
             List.add(temp);
@@ -170,8 +183,10 @@ class Track implements Serializable {
             }
             else return;
         }
-        if(last != null)
-            totalDistance += getDistance(last,temp);
+        if(last != null) {
+            totalDistance += getDistance(last, temp);
+            elevation += abs(-last.altitude + temp.altitude);
+        }
     }
     @Override
     public String toString()
@@ -179,7 +194,8 @@ class Track implements Serializable {
         StringBuilder a = new StringBuilder();
         a.append("Track id: "+id + " Start Date: " + new Date(start_date).toString() +"\n"
                 +"End Date: " + new Date(end_date).toString() + "\n"
-                +"Total Distance: " + totalDistance/1000 + "km" + "\n");
+                +"Total Distance: " + totalDistance/1000 + "km" + "\n"
+                +"Elevation: " + elevation);
         return a.toString();
     }
 }

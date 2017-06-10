@@ -30,7 +30,10 @@ public class trackDetailsView extends AppCompatActivity {
         startActivity(intent);
     }
 
-
+    public void onPopFromServer(View view){
+        DbOps.referenceToApp = this;
+        DbOps.DeleteTrack(currentTrack);
+    }
     @SuppressLint("NewApi")
     public void onDeleteLocally(View view) {
         File f = new File(this.getFilesDir(),currentTrack.getID() + ".json");
@@ -54,7 +57,7 @@ public class trackDetailsView extends AppCompatActivity {
 
     public void onSendToServer(View view) {
         DbOps.referenceToApp = this;
-        DbOps.UploadTrack(currentTrack);
+        DbOps.UploadTrack(this, currentTrack);
     }
     @Override
     protected void onCreate(Bundle savedInstanceState) {

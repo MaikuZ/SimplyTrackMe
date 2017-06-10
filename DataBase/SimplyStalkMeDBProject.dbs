@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <project name="Dziennik aktywności fizycznej" id="Project_2cc95ad2" template="Default" database="PostgreSQL" >
 	<schema name="simplytrackme" schemaname="simplytrackme" >
-		<table name="competition" >
+		<table name="competitions" >
 			<column name="id_competition" type="serial" jt="4" mandatory="y" />
 			<column name="name" type="varchar" length="32" jt="12" mandatory="y" />
 			<column name="place" type="varchar" length="32" jt="12" mandatory="y" />
-			<column name="event_date" type="date" jt="91" mandatory="y" />
+			<column name="event_date" type="timestamp" jt="93" mandatory="y" />
 			<column name="id_type" type="serial" jt="4" />
 			<column name="distance" type="numeric" length="8" decimal="2" jt="2" mandatory="y" />
 			<index name="pk_competition" unique="PRIMARY_KEY" >
@@ -14,40 +14,30 @@
 			<index name="idx_competition" unique="NORMAL" >
 				<column name="id_type" />
 			</index>
-			<fk name="fk_competition" to_schema="simplytrackme" to_table="type_workout" >
+			<fk name="fk_competition" to_schema="simplytrackme" to_table="type_workouts" >
 				<fk_column name="id_type" pk="id_type" />
 			</fk>
 		</table>
 		<table name="friends" generator_rows="100" >
-			<column name="id_user" type="integer" jt="4" mandatory="y" />
-			<column name="id_friend" type="integer" jt="4" mandatory="y" />
+			<column name="id_friend_b" type="integer" jt="4" mandatory="y" />
+			<column name="id_friend_a" type="integer" jt="4" mandatory="y" />
 			<index name="pk_znajomi" unique="UNIQUE" >
-				<column name="id_user" />
+				<column name="id_friend_b" />
 			</index>
 			<index name="idx_znajomi" unique="NORMAL" >
-				<column name="id_friend" />
+				<column name="id_friend_a" />
 			</index>
 			<constraint name="ck_0" >
-				<string>id_user &lt; id_friend</string>
+				<string>id_friend_a &lt; id_friend_b</string>
 				<comment><![CDATA[don't allow redundancy.
 If a is friend with b, so is b with a.]]></comment>
 			</constraint>
-			<fk name="fk_znajomi" to_schema="simplytrackme" to_table="users" >
-				<fk_column name="id_friend" pk="id_user" />
+			<fk name="fk_friends" to_schema="simplytrackme" to_table="users" delete_action="cascade" >
+				<fk_column name="id_friend_a" pk="id_user" />
 			</fk>
-			<fk name="fk_friends" to_schema="simplytrackme" to_table="users" >
-				<fk_column name="id_user" pk="id_user" />
+			<fk name="fk_friends_0" to_schema="simplytrackme" to_table="users" delete_action="cascade" >
+				<fk_column name="id_friend_b" pk="id_user" />
 			</fk>
-		</table>
-		<table name="group" >
-			<column name="id_group" type="serial" jt="4" mandatory="y" />
-			<column name="name" type="varchar" length="32" jt="12" mandatory="y" />
-			<column name="private" type="bool" jt="-7" mandatory="y" >
-				<comment><![CDATA[determine whether the group ought be private or public]]></comment>
-			</column>
-			<index name="pk_group" unique="PRIMARY_KEY" >
-				<column name="id_group" />
-			</index>
 		</table>
 		<table name="group_members" >
 			<column name="id_user" type="integer" jt="4" mandatory="y" />
@@ -62,14 +52,24 @@ If a is friend with b, so is b with a.]]></comment>
 			<index name="idx_group_members_1" unique="NORMAL" >
 				<column name="id_user" />
 			</index>
-			<fk name="fk_group_members" to_schema="simplytrackme" to_table="group" >
+			<fk name="fk_group_members" to_schema="simplytrackme" to_table="groups" delete_action="cascade" >
 				<fk_column name="id_group" pk="id_group" />
 			</fk>
-			<fk name="fk_group_members_0" to_schema="simplytrackme" to_table="users" >
+			<fk name="fk_group_members_0" to_schema="simplytrackme" to_table="users" delete_action="cascade" >
 				<fk_column name="id_user" pk="id_user" />
 			</fk>
 		</table>
-		<table name="node" >
+		<table name="groups" >
+			<column name="id_group" type="serial" jt="4" mandatory="y" />
+			<column name="name" type="varchar" length="32" jt="12" mandatory="y" />
+			<column name="private" type="bool" jt="-7" mandatory="y" >
+				<comment><![CDATA[determine whether the group ought be private or public]]></comment>
+			</column>
+			<index name="pk_group" unique="PRIMARY_KEY" >
+				<column name="id_group" />
+			</index>
+		</table>
+		<table name="nodes" >
 			<comment><![CDATA[node]]></comment>
 			<column name="id_node" type="serial" jt="4" mandatory="y" />
 			<column name="lat" type="numeric" length="12" decimal="10" jt="2" mandatory="y" />
@@ -84,11 +84,16 @@ If a is friend with b, so is b with a.]]></comment>
 				<defo>0</defo>
 				<comment><![CDATA[meters]]></comment>
 			</column>
-			<index name="pk_node" unique="PRIMARY_KEY" >
+			<column name="id_session" type="integer" jt="4" mandatory="y" />
+			<index name="idx_nodes" unique="PRIMARY_KEY" >
 				<column name="id_node" />
+				<column name="id_session" />
 			</index>
-			<fk name="fk_node" to_schema="simplytrackme" to_table="track" >
-				<fk_column name="id_node" pk="id_node" />
+			<index name="idx_nodes_0" unique="NORMAL" >
+				<column name="id_session" />
+			</index>
+			<fk name="fk_nodes" to_schema="simplytrackme" to_table="sessions" delete_action="cascade" >
+				<fk_column name="id_session" pk="id_session" />
 			</fk>
 		</table>
 		<table name="participants" >
@@ -105,21 +110,21 @@ If a is friend with b, so is b with a.]]></comment>
 			<index name="idx_contestants_0" unique="NORMAL" >
 				<column name="id_user" />
 			</index>
-			<fk name="fk_contestants" to_schema="simplytrackme" to_table="competition" >
+			<fk name="fk_contestants" to_schema="simplytrackme" to_table="competitions" delete_action="cascade" >
 				<fk_column name="id_competition" pk="id_competition" />
 			</fk>
-			<fk name="fk_contestants_0" to_schema="simplytrackme" to_table="users" >
+			<fk name="fk_contestants_0" to_schema="simplytrackme" to_table="users" delete_action="cascade" >
 				<fk_column name="id_user" pk="id_user" />
 			</fk>
 		</table>
-		<table name="route" >
+		<table name="routes" >
 			<column name="name" type="varchar" length="100" jt="12" mandatory="y" />
 			<column name="id_route" type="serial" jt="4" mandatory="y" />
 			<index name="pk_route" unique="PRIMARY_KEY" >
 				<column name="id_route" />
 			</index>
 		</table>
-		<table name="session" generator_rows="150" >
+		<table name="sessions" generator_rows="150" >
 			<column name="id_session" type="serial" jt="4" mandatory="y" />
 			<column name="type" type="integer" length="50" jt="4" mandatory="y" />
 			<column name="begin_time" type="timestamp" jt="93" mandatory="y" />
@@ -130,28 +135,27 @@ If a is friend with b, so is b with a.]]></comment>
 			<column name="elevation" type="numeric" length="5" decimal="0" jt="2" mandatory="y" />
 			<column name="id_owner" type="integer" jt="4" mandatory="y" />
 			<column name="id_route" type="integer" jt="4" />
+			<column name="id_localsession" type="integer" jt="4" mandatory="y" />
 			<index name="pk_trening/sesja" unique="PRIMARY_KEY" >
 				<column name="id_session" />
 			</index>
-			<index name="idx_trening/sesja" unique="NORMAL" >
+			<index name="idx_trening_sesja" unique="NORMAL" >
 				<column name="type" />
 			</index>
-			<index name="pk_session" unique="UNIQUE" >
+			<index name="idx_sessions" unique="UNIQUE" >
 				<column name="id_owner" />
-			</index>
-			<index name="idx_session" unique="UNIQUE" >
-				<column name="id_route" />
+				<column name="id_localsession" />
 			</index>
 			<constraint name="ck_2" >
 				<string>begin_time&lt;end_time</string>
 			</constraint>
-			<fk name="typ_treningu" to_schema="simplytrackme" to_table="type_workout" delete_action="setNull" >
+			<fk name="typ_treningu" to_schema="simplytrackme" to_table="type_workouts" delete_action="setNull" >
 				<fk_column name="type" pk="id_type" />
 			</fk>
-			<fk name="fk_session_0" to_schema="simplytrackme" to_table="users" >
+			<fk name="fk_sessions" to_schema="simplytrackme" to_table="users" delete_action="cascade" >
 				<fk_column name="id_owner" pk="id_user" />
 			</fk>
-			<fk name="fk_session" to_schema="simplytrackme" to_table="route" >
+			<fk name="fk_sessions_0" to_schema="simplytrackme" to_table="routes" >
 				<fk_column name="id_route" pk="id_route" />
 			</fk>
 		</table>
@@ -184,26 +188,24 @@ If a is friend with b, so is b with a.]]></comment>
 				<column name="id_type" />
 			</index>
 		</table>
-		<table name="user_session" generator_rows="225" >
+		<table name="user_sessions" generator_rows="225" >
 			<column name="id_user" type="integer" jt="4" mandatory="y" />
 			<column name="id_session" type="integer" jt="4" mandatory="y" />
-			<index name="pk_user_session" unique="UNIQUE" >
+			<index name="idx_user_sessions" unique="PRIMARY_KEY" >
 				<column name="id_user" />
-			</index>
-			<index name="idx_user_session" unique="NORMAL" >
 				<column name="id_session" />
 			</index>
-			<fk name="fk_user_session" to_schema="simplytrackme" to_table="session" >
+			<fk name="fk_user_session" to_schema="simplytrackme" to_table="sessions" delete_action="cascade" >
 				<fk_column name="id_session" pk="id_session" />
 			</fk>
-			<fk name="fk_user_session_0" to_schema="simplytrackme" to_table="users" >
+			<fk name="fk_user_sessions" to_schema="simplytrackme" to_table="users" delete_action="cascade" >
 				<fk_column name="id_user" pk="id_user" />
 			</fk>
 		</table>
 		<table name="users" generator_rows="337" >
 			<column name="id_user" type="serial" jt="4" mandatory="y" />
 			<column name="user_name" type="varchar" length="20" jt="12" mandatory="y" />
-			<column name="join_date" type="time" jt="92" />
+			<column name="join_date" type="timestamp" jt="93" />
 			<column name="weight" type="numeric" length="4" decimal="1" jt="2" mandatory="y" >
 				<defo>80</defo>
 			</column>
@@ -211,20 +213,20 @@ If a is friend with b, so is b with a.]]></comment>
 				<defo>160</defo>
 			</column>
 			<column name="sex" type="char" length="1" jt="1" mandatory="y" >
-				<defo>f</defo>
+				<defo>&#039;f&#039;</defo>
 			</column>
 			<column name="age" type="numeric" length="2" jt="2" mandatory="y" >
 				<defo>18</defo>
 			</column>
-			<column name="name" type="varchar" length="100" jt="12" mandatory="y" />
+			<column name="full_name" type="varchar" length="100" jt="12" />
 			<index name="pk_użytkownicy" unique="PRIMARY_KEY" >
 				<column name="id_user" />
 			</index>
-			<index name="user_name_uniq" unique="UNIQUE" >
+			<index name="idx_users" unique="UNIQUE" >
 				<column name="user_name" />
 			</index>
 			<constraint name="ck_1" >
-				<string>sex = &#039;f&#039; or sex = &#039;m&#039;</string>
+				<string>sex like &#039;f&#039; or sex like &#039;m&#039;</string>
 			</constraint>
 		</table>
 	</schema>
@@ -234,9 +236,7 @@ If a is friend with b, so is b with a.]]></comment>
 		<entity schema="simplytrackme" name="users" color="c1d8ee" x="48" y="176" />
 		<entity schema="simplytrackme" name="groups" color="c1d8ee" x="1008" y="80" />
 		<entity schema="simplytrackme" name="group_members" color="c1d8ee" x="224" y="48" />
-		<entity schema="simplytrackme" name="competition" color="c1d8ee" x="768" y="224" />
 		<entity schema="simplytrackme" name="participants" color="c1d8ee" x="496" y="128" />
-		<entity schema="simplytrackme" name="type_workout" color="c1d8ee" x="976" y="288" />
 		<entity schema="simplytrackme" name="friends" color="c1d8ee" x="64" y="640" />
 		<entity schema="simplytrackme" name="user_sessions" color="1f5182" x="496" y="304" />
 		<entity schema="simplytrackme" name="competitions" color="c1d8ee" x="704" y="224" />

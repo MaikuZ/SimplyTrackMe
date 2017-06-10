@@ -34,6 +34,7 @@ class GPSTracker extends Service implements LocationListener {
     Location location;//location
     double lat;
     double lon;
+    double altitude;
     private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;//IN METERS
     private static final long MIN_TIME_BW_UPDATES = 1000 * 1 * 1; // IN miliseconds; Currently one minute
 
@@ -57,6 +58,7 @@ class GPSTracker extends Service implements LocationListener {
         if(location != null) {
             lat = location.getLatitude();
             lon = location.getLongitude();
+            altitude = location.getAltitude();
         }
         return location;
     }
@@ -92,6 +94,7 @@ class GPSTracker extends Service implements LocationListener {
                         if (location != null) {
                             lat = location.getLatitude();
                             lon = location.getLongitude();
+                            altitude = location.getAltitude();
                         }
                     }
                 }
@@ -114,6 +117,7 @@ class GPSTracker extends Service implements LocationListener {
                             if (location != null) {
                                 lat = location.getLatitude();
                                 lon = location.getLongitude();
+                                altitude = location.getAltitude();
                             }
                         }
                     }
@@ -132,7 +136,12 @@ class GPSTracker extends Service implements LocationListener {
             lat = location.getLatitude();
         return lat;
     }
-
+    public double getAltitude(){
+        if (location != null){
+            altitude = location.getAltitude();
+        }
+        return altitude;
+    }
     public double getLon() {
         if(location != null)
             lon = location.getLongitude();

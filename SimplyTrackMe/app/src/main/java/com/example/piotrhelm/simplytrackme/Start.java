@@ -96,12 +96,13 @@ public class Start extends AppCompatActivity {
                             @Override
                             public void run() {
                                 tracker.getUpdatedLocation();
-                                currentTrack.addNode(tracker.getLat(),tracker.getLon(), Calendar.getInstance().getTime().getTime());
+                                currentTrack.addNode(tracker.getLat(),tracker.getLon(), Calendar.getInstance().getTime().getTime(),tracker.getAltitude());
                                 updateTextView("Current Distance: " +
                                         currentTrack.getTotalDistance()/1000 + " km" + "\n" +
                                         "Current Location: " + tracker.getUpdatedLocation() + "\n" +
-                                        "Track: " + currentTrack.toJSON(currentTrack)
-                                        ,currentStats
+                                        "Current altitude: " + tracker.getAltitude() + "\n"+
+                                        "Elapsed time: " + (Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date())/1000/60 +"minutes"+"\n"+
+                                        "Average speed: " + (currentTrack.getTotalDistance()/1000)/(Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date())*1000*60*60 + "km/h",currentStats
                                 );
                             }
                         });
