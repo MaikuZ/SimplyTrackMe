@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -43,50 +44,56 @@ public class DbOps extends AppCompatActivity {
             return null;
         }
     }
-    private static class UploadTask extends AsyncTask<Track, Void, Boolean> {
-        private void fillTables(Connection c, Track t) throws SQLException {
-            Statement stmt = c.createStatement();
-            String sql ="INSERT INTO simplytrackme.session (id_localsession,id_session,type,route, begin_time, end_time, distance, elevation, id_owner)\n" +
-                    "VALUES ("+t.getID() + ",coalesce((select max(id_session) from simplytrackme.session),0)+1,1,'autom.'," +"to_timestamp("+new Date(t.getStart_date()).getTime()/1000+"),"
-                    +"to_timestamp("+new Date(t.getEnd_date()).getTime()/1000+")" + ","+ new Double(t.getTotalDistance()).intValue()+",100,(select id_user from simplytrackme.users where user_name like'" +t.getOwner().user_name +"'));";
-            //max of id_session is current id.
-            stmt.executeUpdate(sql);
-            stmt.close();
+    private abstract static class UploadTask extends AsyncTask<Void, Void, Boolean> {
+
+        protected Boolean isDone;
+        protected String stringResult;
+        protected ResultSet resultSet;
+
+        public Boolean isDone()
+        {
+            return isDone;
+        }
+        public String getStringResult()
+        {
+            return stringResult;
+        }
+        public ResultSet getResultSet()
+        {
+            return resultSet;
+        }
+        protected void executeQuery(Connection c) throws SQLException {
         }
         @Override
-        protected Boolean doInBackground(Track... params) {
+        protected Boolean doInBackground(Void ... params) {
             Connection c = null;
-            Track t;
-            if (params.length == 0)
-                return null;
-            else
-                t = params[0];
             try {
                 Class.forName("org.postgresql.Driver");
                 DriverManager.setLoginTimeout(3);
                 c = DriverManager
                         .getConnection("jdbc:postgresql://23160.p.tld.pl:5432/pg23160_1",
                                 "pg23160_1", PreferenceManager.getDefaultSharedPreferences(referenceToApp).getString("password", "none"));
-                fillTables(c, t);
+                executeQuery(c);
                 c.close();
             } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                return new Boolean(false);
+                stringResult += e.getMessage();
+                return Boolean.FALSE;
             } catch (SQLException e) {
-                e.printStackTrace();
-                return new Boolean(false);
+                stringResult += e.getMessage();
+                return Boolean.FALSE;
             } catch (Exception e) {
-                return new Boolean(false);
+                stringResult += e.getMessage();
+                return Boolean.FALSE;
             }
-            System.out.println("Opened database successfully");
-            return new Boolean(true);
+            stringResult += "Opened DataBase succesfully";
+            return Boolean.FALSE;
         }
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(referenceToApp);
             alertDialog.setTitle("SQL transfer");
-            alertDialog.setMessage(aBoolean ? "Sent succesfully." : "Failure sending data.");
+            alertDialog.setMessage(stringResult);
             alertDialog.show();
             super.onPostExecute(aBoolean);
         }
@@ -95,8 +102,20 @@ public class DbOps extends AppCompatActivity {
         DeleteTask t = new DeleteTask();
         t.execute(track);
     }
-    public static void UploadTrack(Track track) {
-        UploadTask t = new UploadTask();
-        t.execute(track);
+    public static void UploadTrack(final Track track) {
+        String result;
+        UploadTask t = new UploadTask() {
+            @Override
+            protected void executeQuery(Connection c) throws SQLException {
+                String sql ="INSERT INTO simplytrackme.sessions (id_localsession,id_session,type,id_route, begin_time, end_time, distance, elevation, id_owner)\n" +
+                        "VALUES ("+track.getID() + ",coalesce((select max(id_session) from simplytrackme.sessions),0)+1,0,null," +"to_timestamp("+new Date(track.getStart_date()).getTime()/1000+"),"
+                        +"to_timestamp("+new Date(track.getEnd_date()).getTime()/1000+")" + ","+ Double.valueOf(track.getTotalDistance()).intValue()+",100,(select id_user from simplytrackme.users where user_name like'" +track.getOwner().user_name +"'));";
+                Statement stmt = c.createStatement();
+                stmt.executeUpdate(sql);
+                isDone = true;
+                stmt.close();
+            }
+        };
+        t.execute();
     }
 }
