@@ -19,31 +19,6 @@ import java.sql.Statement;
 
 public class DbOps extends AppCompatActivity {
     static AppCompatActivity referenceToApp = null;
-    private static class DeleteTask extends AsyncTask<Track, Void, Void> {
-        @Override
-        protected Void doInBackground(Track... params) {
-            Connection c = null;
-            Track t;
-            if (params.length == 0)
-                return null;
-            else
-                t = params[0];
-            try {
-                Class.forName("org.postgresql.Driver");
-                c = DriverManager
-                        .getConnection("jdbc:postgresql://23160.p.tld.pl:5432/pg23160_1",
-                                "pg23160_1", PreferenceManager.getDefaultSharedPreferences(referenceToApp).getString("password", "none"));
-                /* add SQL requests */
-                c.close();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            System.out.println("Opened database successfully");
-            return null;
-        }
-    }
     private abstract static class UploadTask extends AsyncTask<Void, Void, Boolean> {
 
         protected Boolean isDone;
@@ -98,9 +73,21 @@ public class DbOps extends AppCompatActivity {
             super.onPostExecute(aBoolean);
         }
     }
-    public static void DeleteTrack(Track track) {
-        DeleteTask t = new DeleteTask();
-        t.execute(track);
+    public static void DeleteTrack(final Track track) {
+        UploadTask t = new UploadTask() {
+            @Override
+            protected void executeQuery(Connection c) throws SQLException {
+                String sql = "DELETE FROM simplytrackme.sessions WHERE " +
+                        "id_localsession = " + track.getID() + " AND " +
+                        "id_owner = (select id_user from simplytrackme.users where user_name like'"
+                        +track.getOwner().user_name +"');\n";
+                Statement stmt = c.createStatement();
+                stmt.executeUpdate(sql);
+                isDone = true;
+                stmt.close();
+            }
+        };
+        t.execute();
     }
     public static void UploadTrack(final Track track) {
         String result;
@@ -118,10 +105,10 @@ public class DbOps extends AppCompatActivity {
                 for(Track.Node x : track.getList()) {
                     sql += "\n INSERT INTO simplytrackme.nodes (id_node ,lat, lon, total_distance, duration, elevation, id_session) VALUES(" +
                             +(id++)+","
-                            + x.getLat()+","
-                            +x.getLon()+","
+                            + Double.valueOf(x.getLat()).floatValue()+","
+                            + Double.valueOf(x.getLon()).floatValue()+","
                             +totalDistance+","
-                            + x.getTime_elapsed() + ","
+                            + x.getTime_elapsed()/1000 + ","//In seconds!!!
                             + x.getAltitude() + ","
                             +"(SELECT id_session from simplytrackme.sessions" +
                             " where id_owner = (select id_user from simplytrackme.users where user_name like'"
