@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import java.sql.Connection;
 import java.sql.Date;
@@ -21,7 +22,7 @@ public class DbOps extends AppCompatActivity {
     private abstract static class UploadTask extends AsyncTask<Void, Void, Boolean> {
 
         protected Boolean isDone;
-        protected String stringResult;
+        protected String stringResult = new String();
         protected ResultSet resultSet;
         static AppCompatActivity referenceToApplication = referenceToApp;
         Statement stmt;
@@ -53,13 +54,13 @@ public class DbOps extends AppCompatActivity {
                 c.close();
             } catch (ClassNotFoundException e) {
                 stringResult += e.getMessage();
-                return Boolean.FALSE;
+                return Boolean.TRUE;
             } catch (SQLException e) {
                 stringResult += e.getMessage();
-                return Boolean.FALSE;
+                return Boolean.TRUE;
             } catch (Exception e) {
                 stringResult += e.getMessage();
-                return Boolean.FALSE;
+                return Boolean.TRUE;
             }
             stringResult = "Opened DataBase succesfully";
             return Boolean.FALSE;
@@ -68,10 +69,7 @@ public class DbOps extends AppCompatActivity {
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             if (aBoolean) {
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(referenceToApplication);
-                alertDialog.setTitle("SQL transfer");
-                alertDialog.setMessage(stringResult);
-                alertDialog.show();
+                Toast.makeText(referenceToApplication, "SQL fail: " + stringResult, Toast.LENGTH_LONG).show();
             }
             super.onPostExecute(aBoolean);
         }
@@ -137,10 +135,8 @@ public class DbOps extends AppCompatActivity {
             }
             @Override
             protected void onPostExecute(Boolean aBoolean) {
-                AlertDialog.Builder alertDialog = new AlertDialog.Builder(referenceToApplication);
-                alertDialog.setTitle("SQL transfer");
-                alertDialog.setMessage(stringResult);
-                alertDialog.show();
+                if (!aBoolean)
+                    Toast.makeText(referenceToApplication, "Uploaded succesfully!", Toast.LENGTH_SHORT).show();
                 super.onPostExecute(aBoolean);
             }
         };
