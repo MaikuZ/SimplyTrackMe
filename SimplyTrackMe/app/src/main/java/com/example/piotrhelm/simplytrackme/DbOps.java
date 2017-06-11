@@ -148,9 +148,10 @@ public class DbOps extends AppCompatActivity {
         UploadTask t = new UploadTask() {
             @Override
             protected void executeQuery(Connection c) throws SQLException {
-                String sql = "SELECT distance, id_session, u.user_name " +
+                String sql = "SELECT distance, u.user_name " +
                         "FROM simplytrackme.sessions JOIN simplytrackme.users u ON sessions.id_owner = u.id_user" +
                         " ORDER BY distance DESC limit 10;";
+//                String sql = "select * from ranking_distance(interval '1 month');";
                 try {
                     stmt = c.createStatement();
                     resultSet = stmt.executeQuery(sql);
