@@ -21,7 +21,6 @@ public class Ranking {
                 array.add(new RankingElement(rs.getString(3), rs.getString(1)));
             }
             rankData = array.toArray(rankData);
-            System.out.println("nothing");
         } catch (Exception e) {
             e.printStackTrace();
         }
