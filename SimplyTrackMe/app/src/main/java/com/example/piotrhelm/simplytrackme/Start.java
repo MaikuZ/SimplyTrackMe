@@ -121,7 +121,7 @@ public class Start extends FragmentActivity implements OnMapReadyCallback {
                                         "Elapsed time: " + (Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date())/1000/60 +"minutes"+"\n"+
                                         "Average speed: " + (currentTrack.getTotalDistance()/1000)/(Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date())*1000*60*60 + "km/h",currentStats
                                 );
-                                if(currentTrack.getList().size() > 1)
+                                if(currentTrack.getList().size() >= 1)
                                     onUptadeMap();
                             }
                         });
