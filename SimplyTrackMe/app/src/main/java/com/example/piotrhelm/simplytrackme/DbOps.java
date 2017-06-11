@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -60,7 +61,7 @@ public class DbOps extends AppCompatActivity {
                 stringResult += e.getMessage();
                 return Boolean.FALSE;
             }
-            stringResult += "Opened DataBase succesfully";
+            stringResult = "Opened DataBase succesfully";
             return Boolean.FALSE;
         }
 
@@ -153,7 +154,7 @@ public class DbOps extends AppCompatActivity {
             protected void executeQuery(Connection c) throws SQLException {
                 String sql = "SELECT distance, id_session, u.user_name " +
                         "FROM simplytrackme.sessions JOIN simplytrackme.users u ON sessions.id_owner = u.id_user" +
-                        " ORDER BY distance DESC;";
+                        " ORDER BY distance DESC limit 10;";
                 stmt = c.createStatement();
                 resultSet = stmt.executeQuery(sql);
                 isDone = true;
