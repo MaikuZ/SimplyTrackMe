@@ -88,12 +88,14 @@ public class Start extends FragmentActivity implements OnMapReadyCallback {
             }
         }
         tracker.getLocation();
+        /*
         {///Alert with current location
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("GPS location");
             alertDialog.setMessage("Current Lat: " + tracker.getLat() + "Current Lon: " + tracker.getLon());
             alertDialog.show();
         }
+        */
         currentTrack = new Track();
         currentTrack.setOwner(new Person(
                 PreferenceManager.getDefaultSharedPreferences(this).getString("person_name", "none"),
