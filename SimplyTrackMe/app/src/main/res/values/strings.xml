@@ -77,4 +77,10 @@
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_ranking_details">RankingDetails</string>
+    <string-array name="trainings">
+        <item>cycling</item>
+        <item>skiing</item>
+        <item>jogging</item>
+        <item>roller blading</item>
+    </string-array>
 </resources>

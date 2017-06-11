@@ -24,7 +24,8 @@
             android:layout_marginTop="16dp"
             android:gravity="center"
             android:text="some text"
-            android:textSize="24sp" />
+            android:textSize="24sp"
+            android:textStyle="bold" />
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/floatingActionButton"
@@ -37,10 +38,35 @@
             android:layout_marginEnd="31dp"
             android:layout_marginRight="31dp"
             android:clickable="true"
+            android:onClick="startSession"
             app:backgroundTint="@android:color/holo_green_light"
             app:elevation="0dp"
             app:fabSize="normal"
             app:srcCompat="@android:drawable/ic_media_play" />
+
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/greeting_text_view"
+            android:layout_alignLeft="@+id/greeting_text_view"
+            android:layout_alignRight="@+id/greeting_text_view"
+            android:layout_alignStart="@+id/greeting_text_view"
+            android:layout_below="@+id/greeting_text_view"
+            android:layout_marginTop="20dp"
+            android:text="Choose training:"
+            android:textAppearance="@android:style/TextAppearance.Material.Medium" />
+
+        <Spinner
+            android:id="@+id/spinner2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/textView4"
+            android:layout_alignTop="@+id/textView4"
+            android:layout_marginLeft="36dp"
+            android:layout_marginStart="36dp"
+            android:layout_toRightOf="@+id/textView4"
+            android:minWidth="150dp" />
 
     </RelativeLayout>
 

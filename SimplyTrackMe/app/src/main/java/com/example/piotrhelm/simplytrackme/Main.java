@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +29,8 @@ public class Main extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private ArrayAdapter<String> adapter;
+    private Spinner spinner;
+    public String trainingStr;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,6 +45,21 @@ public class Main extends AppCompatActivity {
         drawerList = (ListView)findViewById(R.id.navList);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         greetingTextView = (TextView)findViewById(R.id.greeting_text_view);
+        spinner = (Spinner)findViewById(R.id.spinner2);
+        ArrayAdapter<CharSequence> ad = ArrayAdapter.createFromResource(this,
+                R.array.trainings, android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(ad);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                trainingStr = ((CharSequence)parent.getItemAtPosition(position)).toString();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
         greetingTextView.setText("Hello " +
                 PreferenceManager.getDefaultSharedPreferences(this).getString("person_name", "none") + "!");
         addDrawerItems();
@@ -147,6 +165,16 @@ public class Main extends AppCompatActivity {
             tracker.showSettingsAlert();
         }
         if(tracker.isGPSOn) {
+            Intent intent = new Intent(this, Start.class);
+            startActivity(intent);
+        }
+    }
+    public void startSession(View view) {
+        GPSTracker tracker = new GPSTracker(this);
+        if (!tracker.isGPSOn) {
+            tracker.showSettingsAlert();
+        }
+        if (tracker.isGPSOn) {
             Intent intent = new Intent(this, Start.class);
             startActivity(intent);
         }
