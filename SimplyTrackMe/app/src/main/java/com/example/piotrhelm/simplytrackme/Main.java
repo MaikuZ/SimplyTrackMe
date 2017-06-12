@@ -76,9 +76,9 @@ public class Main extends AppCompatActivity {
             @Override
             public void run() {
                 updateGreeter();
-                h.postDelayed(this, 500);
+                h.postDelayed(this, 5000);
             }
-        }, 500);
+        }, 5000);
 
     }
     private void updateGreeter() {
@@ -102,7 +102,7 @@ public class Main extends AppCompatActivity {
                             str.append(" by ");
                             str.append(rs.getString(1));
                             str.append(", distance ");
-                            int metres = rs.getInt(2);
+                            float metres = rs.getInt(2);
                             str.append(new DecimalFormat("#0.0").format(Double.valueOf(metres/1000)));
                             str.append(" km.");
                             greeterDescriptor.setText(str);
