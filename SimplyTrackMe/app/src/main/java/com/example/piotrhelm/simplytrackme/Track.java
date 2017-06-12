@@ -9,7 +9,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -192,10 +193,20 @@ class Track implements Serializable {
     public String toString()
     {
         StringBuilder a = new StringBuilder();
-        a.append("Track id: "+id + " Start Date: " + new Date(start_date).toString() +"\n"
-                +"End Date: " + new Date(end_date).toString() + "\n"
-                +"Total Distance: " + totalDistance/1000 + "km" + "\n"
-                +"Elevation: " + elevation);
+            a.append("Track id: "+id + ", Date: " + new SimpleDateFormat("yyyy-MM-dd").format(new Date(start_date)) +"\n"
+                    +"Total Distance: " + new DecimalFormat("#0.0").format(Double.valueOf(totalDistance/1000)) +  " km");
+        return a.toString();
+    }
+    public String toStringDetailed()
+    {
+        StringBuilder a = new StringBuilder();
+        a.append("Track id: "+id
+                +"\nBegin: "+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(start_date)) +"\n"
+                +"End: "+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(end_date)) +"\n\n"
+                + "Total Distance: " + new DecimalFormat("#0.0").format(Double.valueOf(totalDistance/1000)) +  " km\n"
+                + "Elevation: " +(int)getElevation() + "\n"
+                + "Total time: " + (Calendar.getInstance().getTime().getTime() - getStart_date())/1000/60 +" minutes"+"\n"
+                + "Average speed: " + new DecimalFormat("#0.0").format((getTotalDistance()/1000)/(Calendar.getInstance().getTime().getTime() - getStart_date())*1000*60*60) + " km/h");
         return a.toString();
     }
 }

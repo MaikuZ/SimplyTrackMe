@@ -1,7 +1,6 @@
 package com.example.piotrhelm.simplytrackme;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -13,6 +12,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,13 +23,14 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
 public class Start extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    private Track currentTrack;
+    private Track currentTrack = null;
     private Thread GPSUpdater;
     private Marker currentmarker = null;
     
@@ -87,6 +88,16 @@ public class Start extends FragmentActivity implements OnMapReadyCallback {
                 // result of the request.
             }
         }
+        int permissionCheck = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION);
+        if(permissionCheck == PackageManager.PERMISSION_DENIED)
+        {
+            Toast.makeText(this,"No permission for gps. Please permit it.",Toast.LENGTH_SHORT).show();
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION);
+            return;
+        }
         tracker.getLocation();
         /*
         {///Alert with current location
@@ -115,13 +126,14 @@ public class Start extends FragmentActivity implements OnMapReadyCallback {
                             @Override
                             public void run() {
                                 tracker.getUpdatedLocation();
+                                if(tracker.isPossibleGetLocation())
                                 currentTrack.addNode(tracker.getLat(),tracker.getLon(), Calendar.getInstance().getTime().getTime(),tracker.getAltitude());
                                 updateTextView("Current Distance: " +
-                                        currentTrack.getTotalDistance()/1000 + " km" + "\n" +
-                                        "Current Location: " + tracker.getUpdatedLocation() + "\n" +
+                                        new DecimalFormat("#0.0").format(currentTrack.getTotalDistance()/1000) + " km" + "\n" +
+                                       // "Current Location: " + tracker.getUpdatedLocation() + "\n" +
                                         "Current altitude: " + tracker.getAltitude() + "\n"+
-                                        "Elapsed time: " + (Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date())/1000/60 +"minutes"+"\n"+
-                                        "Average speed: " + (currentTrack.getTotalDistance()/1000)/(Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date())*1000*60*60 + "km/h",currentStats
+                                        "Elapsed time: " + (Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date())/1000/60 +" minutes"+"\n"+
+                                        "Average speed: " + new DecimalFormat("#0.0").format((currentTrack.getTotalDistance()/1000)/(Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date())*1000*60*60) + " km/h",currentStats
                                 );
                                 if(currentTrack.getList().size() >= 1)
                                     onUptadeMap();
@@ -168,6 +180,10 @@ public class Start extends FragmentActivity implements OnMapReadyCallback {
 
     public void endSession(View view) {
         moveTaskToBack(false);
+        if(currentTrack == null) {
+            finish();
+            return;
+        }
         currentTrack.setEnd_date(currentTrack.getStart_date() + currentTrack.getLast().getTime_elapsed());
         currentTrack.saveToFile(this);
         GPSUpdater.interrupt();

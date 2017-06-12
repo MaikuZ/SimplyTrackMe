@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class trackDetailsView extends AppCompatActivity {
@@ -89,7 +88,7 @@ public class trackDetailsView extends AppCompatActivity {
         ///.json file read.
 
         final TextView textViewDetailed = (TextView)findViewById(R.id.textView2);
-        updateTextView(currentTrack.toString()
+        updateTextView(currentTrack.toStringDetailed()
                 ,textViewDetailed);
     }
 }

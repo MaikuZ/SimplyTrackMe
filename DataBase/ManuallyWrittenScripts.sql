@@ -119,3 +119,21 @@ BEGIN
 END;
 $$
 LANGUAGE plpgsql;
+
+---
+drop function delete_if_owner(INTEGER,INTEGER);
+
+CREATE OR REPLACE FUNCTION delete_if_owner()
+  RETURNS TRIGGER AS
+$$
+BEGIN
+  IF (old.id_user = (SELECT id_owner FROM simplytrackme.sessions WHERE id_session = old.id_session)) THEN
+    DELETE FROM simplytrackme.sessions WHERE id_session = old.id_session;
+  END IF;
+  return null;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE trigger user_owner_delete after delete on simplytrackme.user_sessions
+for each row execute procedure delete_if_owner();

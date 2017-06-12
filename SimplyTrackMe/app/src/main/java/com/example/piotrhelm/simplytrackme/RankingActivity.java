@@ -2,16 +2,11 @@ package com.example.piotrhelm.simplytrackme;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 
 public class RankingActivity extends AppCompatActivity {
 
@@ -22,6 +17,7 @@ public class RankingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ranking);
         list = (ListView) findViewById(R.id.rankListView);
         final Context c = this;
+
         DbOps.GetRanking(this, new Ranking.RankingOp() {
             @Override
             public void run(final Ranking r) {
