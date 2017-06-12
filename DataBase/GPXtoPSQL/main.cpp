@@ -71,7 +71,7 @@ string ExtractGPX(string nameFile,double minV, double maxV,int idUser,int idType
 
    /* "Read file into vector<char>"  See linked thread above*/
    vector<char> buffer((istreambuf_iterator<char>(myfile)), istreambuf_iterator<char>( ));
-   vector<pair<double,double> > Pairs;
+   vector<pair<long double,long double> > Pairs;
    vector<string> Read;
         string temp = "";
    for(int i = 0;i < buffer.size();i++)
@@ -112,21 +112,23 @@ string ExtractGPX(string nameFile,double minV, double maxV,int idUser,int idType
        {
            currentLonDouble += currentLon[j];
        }
-       double lat = stod(currentLatDouble);
-       double lon = stod(currentLonDouble);
+       long double lat = stold(currentLatDouble);
+       long double lon = stold(currentLonDouble);
        Pairs.push_back(make_pair(lat,lon));
    }
-   pair<double,double> lastNode = *Pairs.begin();
+   pair<long double,long double> lastNode = *Pairs.begin();
    int i = 0;
    string InsertIntoNodes;
-   long long int totalDistance = 0;
+   long double totalDistance = 0;
    long long int duration = 0;
    long long int id_node = 0;
    for(auto x: Pairs)
    {
        if(i++ == 0)
             continue;
-        double distance = getStraightDistanceTo(x.first,x.second,lastNode.first,lastNode.second);
+        long double distance = getStraightDistanceTo(x.first,x.second,lastNode.first,lastNode.second);
+		lastNode = x;
+		totalDistance += distance;
         distance/=1000;//km
         //V = droga/czas
         //czas = droga/V
@@ -145,14 +147,13 @@ string ExtractGPX(string nameFile,double minV, double maxV,int idUser,int idType
         long long int c = rand()%(b-a);
         long long int atLast = c + a;
         atLast/=1000;
-        totalDistance += distance*1000;
         duration += atLast;
         //cout<<x.first<<" : "<<x.second<<" : "<<atLast<<" distance: "<<(int)(distance*1000)<<endl;
         InsertIntoNodes += "INSERT INTO simplytrackme.nodes (id_node ,lat, lon, total_distance, duration, elevation, id_session) VALUES("
         + to_string(id_node++) +","
         + to_string(x.first) + ","
         + to_string(x.second) + ","
-        + to_string(totalDistance) + ","
+        + to_string((long long int)totalDistance) + ","
         + to_string(duration) + ","
         + "0" + ","
         + "(SELECT id_session from simplytrackme.sessions"
@@ -171,7 +172,7 @@ string ExtractGPX(string nameFile,double minV, double maxV,int idUser,int idType
     + to_string(idType)+",null,"
     +"current_timestamp,"
     +"current_timestamp + interval'" + to_string(duration) + " s',"
-    + to_string(totalDistance)
+    + to_string((long long int)totalDistance)
     +","+"0,"
     +to_string(idUser) + ");\n";
 
