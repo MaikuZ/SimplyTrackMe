@@ -202,10 +202,7 @@ public class DbOps extends AppCompatActivity {
     }
     public static void ProcessQuery(AppCompatActivity context, String query, final DbOps.ResultOp resultOp) {
         QueryTask queryTask = new QueryTask(context, query, resultOp);
-//        queryTask.execute();
-    }
-    public static void donothing() {
-
+        queryTask.execute();
     }
 
 }

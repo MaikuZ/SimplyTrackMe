@@ -89,7 +89,6 @@ public class Main extends AppCompatActivity {
                 new DbOps.ResultOp() {
                     @Override
                     public void processResult(ResultSet rs) {
-                        /*
                         try {
                             rs.next();
                         } catch (SQLException e) {
@@ -110,7 +109,6 @@ public class Main extends AppCompatActivity {
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
-                        */
                     }
                 });
     }
