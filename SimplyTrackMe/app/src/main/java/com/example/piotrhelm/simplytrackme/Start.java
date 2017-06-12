@@ -5,25 +5,34 @@ import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 
-public class Start extends AppCompatActivity {
+public class Start extends FragmentActivity implements OnMapReadyCallback {
 
-    ///TODO:
-    ///1) RETURNING TO THE PREVIOUS SCREEN NOT ALLOWED, UNTIL THE USER ENDS THE SESSION. IT SHALL THEN BE SAVED AS .JSON FILE
-    ///IN THE INTERNAL STORAGE DONE!
-    ///2) BACKUP EVERY n seconds. I.E. saving .json file
-    ///3) ADD button to end session. Add text showing current stats. WIP.
+    private GoogleMap mMap;
     private Track currentTrack;
     private Thread GPSUpdater;
+    private Marker currentmarker = null;
+    
     private int MY_PERMISSIONS_REQUEST_ACCESS_FINE_LOCATION;
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
@@ -37,11 +46,18 @@ public class Start extends AppCompatActivity {
         moveTaskToBack(true);///Disables returning to the main menu.
     }
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_start);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
         final TextView currentStats = (TextView)findViewById(R.id.textView);
+
         final GPSTracker tracker = new GPSTracker(this);
+
+
         if(!tracker.isGPSOn) {
             tracker.showSettingsAlert();
         }
@@ -72,12 +88,14 @@ public class Start extends AppCompatActivity {
             }
         }
         tracker.getLocation();
+        /*
         {///Alert with current location
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(this);
             alertDialog.setTitle("GPS location");
             alertDialog.setMessage("Current Lat: " + tracker.getLat() + "Current Lon: " + tracker.getLon());
             alertDialog.show();
         }
+        */
         currentTrack = new Track();
         currentTrack.setOwner(new Person(
                 PreferenceManager.getDefaultSharedPreferences(this).getString("person_name", "none"),
@@ -86,6 +104,7 @@ public class Start extends AppCompatActivity {
                 Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("person_height", "0")),
                 Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("person_weight", "0"))
         ));
+
         GPSUpdater = new Thread() {
             @Override
             public void run() {
@@ -104,6 +123,8 @@ public class Start extends AppCompatActivity {
                                         "Elapsed time: " + (Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date())/1000/60 +"minutes"+"\n"+
                                         "Average speed: " + (currentTrack.getTotalDistance()/1000)/(Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date())*1000*60*60 + "km/h",currentStats
                                 );
+                                if(currentTrack.getList().size() >= 1)
+                                    onUptadeMap();
                             }
                         });
                     }
@@ -111,8 +132,40 @@ public class Start extends AppCompatActivity {
                 }
             }
         };
+
         GPSUpdater.start();
     }
+
+    public void onUptadeMap(){
+        ArrayList<Track.Node> Temp = currentTrack.getList();
+        ArrayList<LatLng> List = new ArrayList<>();
+
+        for(int i = 0; i < Temp.size(); i++) {
+            LatLng e = new LatLng(Temp.get(i).getLat(), Temp.get(i).getLon());
+            List.add(e);
+        }
+
+        LatLng marker = new LatLng(currentTrack.getLast().getLat(),currentTrack.getLast().getLon());
+        if(currentmarker != null)
+        {
+            currentmarker.remove();
+            currentmarker = null;
+        }
+        currentmarker = mMap.addMarker(new MarkerOptions().position(marker).title("You're here"));
+
+        PolylineOptions polylineOptions = new PolylineOptions();
+
+        // Create polyline options with existing LatLng ArrayList
+        polylineOptions.addAll(List);
+        polylineOptions
+                .width(5)
+                .color(Color.RED);
+
+        mMap.addPolyline(polylineOptions);
+        mMap.moveCamera(CameraUpdateFactory.zoomTo(15.0f));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(marker));
+    }
+
     public void endSession(View view) {
         moveTaskToBack(false);
         currentTrack.setEnd_date(currentTrack.getStart_date() + currentTrack.getLast().getTime_elapsed());
@@ -123,5 +176,16 @@ public class Start extends AppCompatActivity {
         myIntent.putExtra("fileName", currentTrack.getID() + ".json");
         startActivityForResult(myIntent, 0);
         finish();
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        /*LatLng marker = new LatLng(new GPSTracker(this).getLat(),new GPSTracker(this).getLon());
+        mMap.addMarker(new MarkerOptions().position(marker).title("Tu jesteś!!!"));*/
+
+
     }
 }

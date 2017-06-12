@@ -20,7 +20,7 @@ import java.util.List;
 public class RankingAdapter extends ArrayAdapter<RankingElement> {
     Context context;
     int layoutResourceId;
-    RankingElement elements[] = {new RankingElement("wrong", "wrong")};
+    RankingElement elements[] = {};
 
     public RankingAdapter(@NonNull Context context, @LayoutRes int resource, @NonNull RankingElement[] objects) {
         super(context, resource, objects);

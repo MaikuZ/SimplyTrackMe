@@ -18,7 +18,7 @@ public class Ranking {
             ArrayList<RankingElement> array = new ArrayList<>();
             rankData = new RankingElement[rs.getFetchSize()];
             while (rs.next()) {
-                array.add(new RankingElement(rs.getString(3), rs.getString(1)));
+                array.add(new RankingElement(rs.getString(2), rs.getString(1)));
             }
             rankData = array.toArray(rankData);
         } catch (Exception e) {

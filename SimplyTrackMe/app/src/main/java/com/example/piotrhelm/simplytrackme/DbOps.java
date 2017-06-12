@@ -148,20 +148,28 @@ public class DbOps extends AppCompatActivity {
         UploadTask t = new UploadTask() {
             @Override
             protected void executeQuery(Connection c) throws SQLException {
-                String sql = "SELECT distance, id_session, u.user_name " +
+                String sql = "SELECT distance, u.user_name " +
                         "FROM simplytrackme.sessions JOIN simplytrackme.users u ON sessions.id_owner = u.id_user" +
                         " ORDER BY distance DESC limit 10;";
-                stmt = c.createStatement();
-                resultSet = stmt.executeQuery(sql);
-                isDone = true;
+//                String sql = "select * from ranking_distance(interval '1 month');";
+                try {
+                    stmt = c.createStatement();
+                    resultSet = stmt.executeQuery(sql);
+                    isDone = true;
+                } catch (Exception e) {
+                    Toast.makeText(referenceToApplication, "Failed to execute SQL statement", Toast.LENGTH_LONG).show();
+                    stmt = null;
+                }
             }
             @Override
             protected void onPostExecute(Boolean aBoolean) {
                 Ranking r = new Ranking(getResultSet());
                 rankingOp.run(r);
                 try {
-                    stmt.close();
+                    if (stmt != null)
+                        stmt.close();
                 } catch (SQLException e) {
+                    Toast.makeText(referenceToApplication, "SQL fail: " + stringResult, Toast.LENGTH_LONG).show();
                     e.printStackTrace();
                 }
                 super.onPostExecute(aBoolean);
