@@ -1,6 +1,7 @@
 package com.example.piotrhelm.simplytrackme;
 
 import java.sql.ResultSet;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 /**
@@ -17,7 +18,9 @@ public class Ranking {
             ArrayList<RankingElement> array = new ArrayList<>();
             rankData = new RankingElement[rs.getFetchSize()];
             while (rs.next()) {
-                array.add(new RankingElement(rs.getString(2), rs.getString(1)));
+                float metres = rs.getInt(2);
+                String result = new DecimalFormat("#0.0").format(Double.valueOf(metres/1000));
+                array.add(new RankingElement(rs.getString(1), result + " km"));
             }
             rankData = array.toArray(rankData);
         } catch (Exception e) {

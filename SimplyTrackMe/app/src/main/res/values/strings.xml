@@ -84,4 +84,8 @@
         <item>rollerblading</item>
         <item>skiing</item>
     </string-array>
+    <string-array name="rankings">
+        <item>Longest (users)</item>
+        <item>Longest (trainings)</item>
+    </string-array>
 </resources>
