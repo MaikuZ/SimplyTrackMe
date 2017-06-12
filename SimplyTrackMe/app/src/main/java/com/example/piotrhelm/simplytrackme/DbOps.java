@@ -30,34 +30,46 @@ public class DbOps extends AppCompatActivity {
             this.resultOp = resultOp;
         }
         @Override
-        protected void executeQuery(Connection c) throws SQLException {
+        protected boolean executeQuery(Connection c) throws SQLException {
             try {
                 stmt = c.createStatement();
+            } catch (Exception e) {
+                this.cancel(false);
+                return true;
+            }
+            try {
                 resultSet = stmt.executeQuery(sqlQuery);
                 isDone = true;
             } catch (Exception e) {
-                Toast.makeText(referenceToApplication, "Failed to execute SQL statement", Toast.LENGTH_LONG).show();
+//                Toast.makeText(referenceToApplication, "Failed to execute SQL statement", Toast.LENGTH_LONG).show();
                 try {
                     stmt.close();
                 } catch (Exception e2) {
-                    Toast.makeText(referenceToApplication, "SQL close fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(referenceToApplication, "SQL close fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
                 this.cancel(false);
+                return true;
             }
+            return false;
         }
         @Override
         protected void onPostExecute(Boolean aBoolean) {
             ResultSet rs = null;
+            if (aBoolean || stmt == null) {
+                Toast.makeText(referenceToApplication, "Failed to connect to DB", Toast.LENGTH_LONG).show();
+                return;
+            }
             try {
                 rs = stmt.getResultSet();
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 Toast.makeText(referenceToApplication, "SQL getResultSet fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                return;
             }
             resultOp.processResult(rs);
             try {
                 if (stmt != null)
                     stmt.close();
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 Toast.makeText(referenceToApplication, "SQL close fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
@@ -91,7 +103,7 @@ public class DbOps extends AppCompatActivity {
             referenceToApplication = ref;
         }
 
-        abstract protected void executeQuery(Connection c) throws SQLException;
+        abstract protected boolean executeQuery(Connection c) throws SQLException;
 
         @Override
         protected Boolean doInBackground(Void ... params) {
@@ -102,8 +114,10 @@ public class DbOps extends AppCompatActivity {
                 c = DriverManager
                         .getConnection("jdbc:postgresql://23160.p.tld.pl:5432/pg23160_1",
                                 "pg23160_1", PreferenceManager.getDefaultSharedPreferences(referenceToApplication).getString("password", "none"));
-                executeQuery(c);
+                boolean ret = executeQuery(c);
                 c.close();
+                if (ret)
+                    return Boolean.TRUE;
             } catch (ClassNotFoundException e) {
                 stringResult += e.getMessage();
                 return Boolean.TRUE;
@@ -135,7 +149,7 @@ public class DbOps extends AppCompatActivity {
                 super.onPostExecute(aBoolean);
             }
             @Override
-            protected void executeQuery(Connection c) throws SQLException {
+            protected boolean executeQuery(Connection c) throws SQLException {
                 String sql = "DELETE FROM simplytrackme.sessions WHERE " +
                         "id_localsession = " + track.getID() + " AND " +
                         "id_owner = (select id_user from simplytrackme.users where user_name like'"
@@ -144,6 +158,7 @@ public class DbOps extends AppCompatActivity {
                 stmt.executeUpdate(sql);
                 isDone = true;
                 stmt.close();
+                return false;
             }
         };
         t.execute();
@@ -152,7 +167,7 @@ public class DbOps extends AppCompatActivity {
         String result;
         UploadTask t = new UploadTask(c) {
             @Override
-            protected void executeQuery(Connection c) throws SQLException {
+            protected boolean executeQuery(Connection c) throws SQLException {
                 String sql ="INSERT INTO simplytrackme.sessions (id_localsession,id_session,type,id_route, begin_time, end_time, distance, elevation, id_owner)\n" +
                         "VALUES ("+track.getID() + ",coalesce((select max(id_session) from simplytrackme.sessions),0)+1,"+track.getTrainingType()+",null," +"to_timestamp("+new Date(track.getStart_date()).getTime()/1000+"),"
                         +"to_timestamp("+new Date(track.getEnd_date()).getTime()/1000+")" + ","+ Double.valueOf(track.getTotalDistance()).intValue()
@@ -190,6 +205,7 @@ public class DbOps extends AppCompatActivity {
                 stmt.executeUpdate(sql);
                 isDone = true;
                 stmt.close();
+                return false;
             }
             @Override
             protected void onPostExecute(Boolean aBoolean) {
