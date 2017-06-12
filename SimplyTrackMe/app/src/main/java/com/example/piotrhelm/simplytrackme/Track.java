@@ -50,25 +50,26 @@ class Track implements Serializable {
     }
 
     private int id;
-    private long start_date;
+    private long startDate;
     private double totalDistance = 0;
     private double elevation = 0;
-    private long end_date;
+    private long endDate;
+    private Person owner;
+    private int trainingType;
 
     public double getElevation(){
         return elevation;
     }
-    public long getStart_date(){
-        return start_date;
+    public long getStartDate(){
+        return startDate;
     }
-    public long getEnd_date(){
-        return end_date;
+    public long getEndDate(){
+        return endDate;
     }
     public Person getOwner() {
         return owner;
     }
 
-    private Person owner;
 
     public double getTotalDistance() {
         return totalDistance;
@@ -78,18 +79,17 @@ class Track implements Serializable {
         return id;
     }
 
-    private int trainingType;
 
-    void setId(int a) {
+    public void setId(int a) {
         id = a;
     }
 
-    void setEnd_date(long a) {
-        end_date = a;
+    public void setEndDate(long a) {
+        endDate = a;
     }
 
-    void setStart_date(long a) {
-        start_date = a;
+    public void setStartDate(long a) {
+        startDate = a;
     }
     static String toJSON(Track track_in) {
         Gson gson = new Gson();
@@ -106,24 +106,7 @@ class Track implements Serializable {
             e.printStackTrace();
         }
     }
-    void loadFromFile(Context mContext, String fileName){
-
-        try {
-            FileInputStream inputStream = mContext.openFileInput(fileName);
-            BufferedReader r = new BufferedReader(new InputStreamReader(inputStream));
-            StringBuilder total = new StringBuilder();
-            String line;
-            while ((line = r.readLine()) != null) {
-                total.append(line);
-            }
-            r.close();
-            Gson temp = new Gson();
-            inputStream.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    void setOwner(Person a) {
+    public void setOwner(Person a) {
         owner = a;
     }
 
@@ -176,11 +159,11 @@ class Track implements Serializable {
     private ArrayList<Person> Participents;
     Track() {
         List = new ArrayList<>();
-        start_date = Calendar.getInstance().getTime().getTime();
+        startDate = Calendar.getInstance().getTime().getTime();
         id = lastID++;
     }
     public void addNode(double lat, double lon, long time, double altitude){
-        Node temp = new Node(lat,lon,time-start_date,altitude);
+        Node temp = new Node(lat,lon,time-startDate,altitude);
         Node last = getLast();
         if(last == null)
             List.add(temp);
@@ -200,20 +183,20 @@ class Track implements Serializable {
     public String toString()
     {
         StringBuilder a = new StringBuilder();
-            a.append("Track id: "+id + ", Date: " + new SimpleDateFormat("yyyy-MM-dd").format(new Date(start_date)) +"\n"
+            a.append("Track id: "+id + ", Date: " + new SimpleDateFormat("yyyy-MM-dd").format(new Date(startDate)) +"\n"
                     +"Total Distance: " + new DecimalFormat("#0.0").format(Double.valueOf(totalDistance/1000)) +  " km");
         return a.toString();
     }
     public String toStringDetailed()
     {
         StringBuilder a = new StringBuilder();
-        a.append("Track id: "+id
-                +"\nBegin: "+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(start_date)) +"\n"
-                +"End: "+ new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(end_date)) +"\n\n"
+        a.append("Track id: " + id
+                + "\nBegin: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(startDate)) +"\n"
+                + "End: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(endDate)) + "\n\n"
                 + "Total Distance: " + new DecimalFormat("#0.0").format(Double.valueOf(totalDistance/1000)) +  " km\n"
-                + "Elevation: " +(int)getElevation() + "\n"
-                + "Total time: " + (Calendar.getInstance().getTime().getTime() - getStart_date())/1000/60 +" minutes"+"\n"
-                + "Average speed: " + new DecimalFormat("#0.0").format((getTotalDistance()/1000)/(Calendar.getInstance().getTime().getTime() - getStart_date())*1000*60*60) + " km/h");
+                + "Elevation: " + (int)getElevation() + "\n"
+                + "Total time: " + (Calendar.getInstance().getTime().getTime() - getStartDate())/1000/60 + " minutes"+"\n"
+                + "Average speed: " + new DecimalFormat("#0.0").format((getTotalDistance()/1000)/(Calendar.getInstance().getTime().getTime() - getStartDate())*1000*60*60) + " km/h");
         return a.toString();
     }
 }

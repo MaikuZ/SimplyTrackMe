@@ -169,8 +169,8 @@ public class DbOps extends AppCompatActivity {
             @Override
             protected boolean executeQuery(Connection c) throws SQLException {
                 String sql ="INSERT INTO simplytrackme.sessions (id_localsession,id_session,type,id_route, begin_time, end_time, distance, elevation, id_owner)\n" +
-                        "VALUES ("+track.getID() + ",coalesce((select max(id_session) from simplytrackme.sessions),0)+1,"+track.getTrainingType()+",null," +"to_timestamp("+new Date(track.getStart_date()).getTime()/1000+"),"
-                        +"to_timestamp("+new Date(track.getEnd_date()).getTime()/1000+")" + ","+ Double.valueOf(track.getTotalDistance()).intValue()
+                        "VALUES ("+track.getID() + ",coalesce((select max(id_session) from simplytrackme.sessions),0)+1,"+track.getTrainingType()+",null," +"to_timestamp("+new Date(track.getStartDate()).getTime()/1000+"),"
+                        +"to_timestamp("+new Date(track.getEndDate()).getTime()/1000+")" + ","+ Double.valueOf(track.getTotalDistance()).intValue()
                         +","+track.getElevation()
                         +",(select id_user from simplytrackme.users where user_name like'" +track.getOwner().user_name +"'));";
                 long totalDistance = 0;

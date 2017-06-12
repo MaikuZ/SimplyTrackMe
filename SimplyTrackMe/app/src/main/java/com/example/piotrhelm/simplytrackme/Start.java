@@ -131,8 +131,8 @@ public class Start extends FragmentActivity implements OnMapReadyCallback {
                                     updateTextView("Current Distance: "
                                             + new DecimalFormat("#0.0").format(currentTrack.getTotalDistance() / 1000) + " km" + "\n"
                                             + "Current altitude: " + tracker.getAltitude() + "\n"
-                                            + "Elapsed time: " + (Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date()) / 1000 / 60 + " minutes" + "\n"
-                                            + "Average speed: " + new DecimalFormat("#0.0").format((currentTrack.getTotalDistance() / 1000) / (Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date()) * 1000 * 60 * 60) + " km/h"
+                                            + "Elapsed time: " + (Calendar.getInstance().getTime().getTime() - currentTrack.getStartDate()) / 1000 / 60 + " minutes" + "\n"
+                                            + "Average speed: " + new DecimalFormat("#0.0").format((currentTrack.getTotalDistance() / 1000) / (Calendar.getInstance().getTime().getTime() - currentTrack.getStartDate()) * 1000 * 60 * 60) + " km/h"
                                             , currentStats);
                                     if(currentTrack.getList().size() >= 1)//Update the map only if there is at least one node
                                         onUptadeMap();
@@ -191,7 +191,7 @@ public class Start extends FragmentActivity implements OnMapReadyCallback {
             return;
         }
 
-        currentTrack.setEnd_date(currentTrack.getStart_date() + currentTrack.getLast().getTime_elapsed());
+        currentTrack.setEndDate(currentTrack.getStartDate() + currentTrack.getLast().getTime_elapsed());
         currentTrack.saveToFile(this);
         GPSUpdater.interrupt();
 
