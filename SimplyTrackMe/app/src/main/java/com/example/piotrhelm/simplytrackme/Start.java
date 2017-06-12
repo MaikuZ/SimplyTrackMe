@@ -127,14 +127,16 @@ public class Start extends FragmentActivity implements OnMapReadyCallback {
                             public void run() {
                                 tracker.getUpdatedLocation();
                                 if(tracker.isPossibleGetLocation())
-                                currentTrack.addNode(tracker.getLat(),tracker.getLon(), Calendar.getInstance().getTime().getTime(),tracker.getAltitude());
-                                updateTextView("Current Distance: " +
-                                        new DecimalFormat("#0.0").format(currentTrack.getTotalDistance()/1000) + " km" + "\n" +
-                                       // "Current Location: " + tracker.getUpdatedLocation() + "\n" +
-                                        "Current altitude: " + tracker.getAltitude() + "\n"+
-                                        "Elapsed time: " + (Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date())/1000/60 +" minutes"+"\n"+
-                                        "Average speed: " + new DecimalFormat("#0.0").format((currentTrack.getTotalDistance()/1000)/(Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date())*1000*60*60) + " km/h",currentStats
-                                );
+                                if(tracker.getLocation() != null) {
+                                    currentTrack.addNode(tracker.getLat(), tracker.getLon(), Calendar.getInstance().getTime().getTime(), tracker.getAltitude());
+                                    updateTextView("Current Distance: " +
+                                            new DecimalFormat("#0.0").format(currentTrack.getTotalDistance() / 1000) + " km" + "\n" +
+                                            // "Current Location: " + tracker.getUpdatedLocation() + "\n" +
+                                            "Current altitude: " + tracker.getAltitude() + "\n" +
+                                            "Elapsed time: " + (Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date()) / 1000 / 60 + " minutes" + "\n" +
+                                            "Average speed: " + new DecimalFormat("#0.0").format((currentTrack.getTotalDistance() / 1000) / (Calendar.getInstance().getTime().getTime() - currentTrack.getStart_date()) * 1000 * 60 * 60) + " km/h", currentStats
+                                    );
+                                }
                                 if(currentTrack.getList().size() >= 1)
                                     onUptadeMap();
                             }

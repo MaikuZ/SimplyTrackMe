@@ -76,6 +76,12 @@ public class DbOps extends AppCompatActivity {
     public static void DeleteTrack(final Track track) {
         UploadTask t = new UploadTask() {
             @Override
+            protected void onPostExecute(Boolean aBoolean) {
+                if (!aBoolean)
+                    Toast.makeText(referenceToApplication, "Popped succesfully!", Toast.LENGTH_SHORT).show();
+                super.onPostExecute(aBoolean);
+            }
+            @Override
             protected void executeQuery(Connection c) throws SQLException {
                 String sql = "DELETE FROM simplytrackme.sessions WHERE " +
                         "id_localsession = " + track.getID() + " AND " +
@@ -148,9 +154,7 @@ public class DbOps extends AppCompatActivity {
             @Override
             protected void executeQuery(Connection c) throws SQLException {
                 String sql;
-                sql = "SELECT distance, id_session, u.user_name " +
-                        "FROM simplytrackme.sessions JOIN simplytrackme.users u ON sessions.id_owner = u.id_user" +
-                        " ORDER BY distance DESC limit 10;";
+
                 sql = "SELECT * FROM ranking_distance(INTERVAL '1 month');";
                 try {
                     stmt = c.createStatement();
