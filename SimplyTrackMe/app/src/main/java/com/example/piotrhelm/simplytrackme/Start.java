@@ -115,6 +115,7 @@ public class Start extends FragmentActivity implements OnMapReadyCallback {
                 Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("person_height", "0")),
                 Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(this).getString("person_weight", "0"))
         ));
+        currentTrack.setTrainingType(this.getIntent().getIntExtra("training_type", 0));
 
         GPSUpdater = new Thread() {
             @Override

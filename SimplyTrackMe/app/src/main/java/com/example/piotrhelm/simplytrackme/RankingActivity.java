@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.sql.ResultSet;
+
 public class RankingActivity extends AppCompatActivity {
 
     private ListView list;
@@ -18,9 +20,10 @@ public class RankingActivity extends AppCompatActivity {
         list = (ListView) findViewById(R.id.rankListView);
         final Context c = this;
 
-        DbOps.GetRanking(this, new Ranking.RankingOp() {
+        DbOps.ProcessQuery(this, "SELECT * FROM ranking_distance(INTERVAL '1 month');", new DbOps.ResultOp() {
             @Override
-            public void run(final Ranking r) {
+            public void processResult(ResultSet rs) {
+                final Ranking r = new Ranking(rs);
                 list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     public void onItemClick(AdapterView<?> parent, View view,
                                             int position, long id) {

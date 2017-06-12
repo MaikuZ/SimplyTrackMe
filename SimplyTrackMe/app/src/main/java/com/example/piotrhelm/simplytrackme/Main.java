@@ -3,6 +3,7 @@ package com.example.piotrhelm.simplytrackme;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,16 +17,22 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.DecimalFormat;
+
 import static java.lang.StrictMath.max;
 
 public class Main extends AppCompatActivity {
     private ListView drawerList;
     private TextView greetingTextView;
+    private TextView greeterDescriptor;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
     private ArrayAdapter<String> adapter;
     private Spinner spinner;
-    public String trainingStr;
+    private Handler h;
+    private int training_type;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,6 +47,8 @@ public class Main extends AppCompatActivity {
         drawerList = (ListView)findViewById(R.id.navList);
         drawerLayout = (DrawerLayout)findViewById(R.id.drawer_layout);
         greetingTextView = (TextView)findViewById(R.id.greeting_text_view);
+        greeterDescriptor = (TextView)findViewById(R.id.greeter_descriptor);
+        greeterDescriptor.setText("");
         spinner = (Spinner)findViewById(R.id.spinner2);
         ArrayAdapter<CharSequence> ad = ArrayAdapter.createFromResource(this,
                 R.array.trainings, android.R.layout.simple_spinner_dropdown_item);
@@ -47,7 +56,7 @@ public class Main extends AppCompatActivity {
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                trainingStr = ((CharSequence)parent.getItemAtPosition(position)).toString();
+                training_type = position;
             }
 
             @Override
@@ -61,7 +70,49 @@ public class Main extends AppCompatActivity {
         setupDrawer();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
+        h = new Handler();
+        updateGreeter();
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                updateGreeter();
+                h.postDelayed(this, 500);
+            }
+        }, 500);
 
+    }
+    private void updateGreeter() {
+        DbOps.ProcessQuery(this,
+                "select user_name, distance, w.name from simplytrackme.sessions s " +
+                        "join simplytrackme.users u on u.id_user = s.id_owner join " +
+                        "simplytrackme.type_workouts w on w.id_type=s.type order by id_session desc limit 1",
+                new DbOps.ResultOp() {
+                    @Override
+                    public void processResult(ResultSet rs) {
+                        /*
+                        try {
+                            rs.next();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                            return;
+                        }
+                        try {
+                            StringBuilder str = new StringBuilder();
+                            str.append("Latest session was ");
+                            str.append(rs.getString(3));
+                            str.append(" by ");
+                            str.append(rs.getString(1));
+                            str.append(", distance ");
+                            int metres = rs.getInt(2);
+                            str.append(new DecimalFormat("#0.0").format(Double.valueOf(metres/1000)));
+                            str.append(" km.");
+                            greeterDescriptor.setText(str);
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                        */
+                    }
+                });
     }
     private void addDrawerItems() {
         String[] osArray = { "History", "Ranks", "Settings", "Profile" };
@@ -166,6 +217,7 @@ public class Main extends AppCompatActivity {
         }
         if (tracker.isGPSOn) {
             Intent intent = new Intent(this, Start.class);
+            intent.putExtra("training_type", training_type);
             startActivity(intent);
         }
     }

@@ -72,8 +72,9 @@
             android:parentActivityName=".Main"/>
         <activity
             android:name=".RankingDetails"
-            android:label="@string/title_activity_ranking_details"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:parentActivityName=".RankingActivity"
+            android:label="@string/title_activity_ranking_details"/>
+
     </application>
 
 </manifest>

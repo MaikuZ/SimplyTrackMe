@@ -17,6 +17,54 @@ import java.sql.Statement;
  */
 
 public class DbOps extends AppCompatActivity {
+    public interface ResultOp {
+        public void processResult(ResultSet rs);
+    }
+
+    private static class QueryTask extends UploadTask {
+        DbOps.ResultOp resultOp;
+        String sqlQuery;
+        QueryTask(AppCompatActivity ref, String query, DbOps.ResultOp resultOp) {
+            super(ref);
+            sqlQuery = query;
+            this.resultOp = resultOp;
+        }
+        @Override
+        protected void executeQuery(Connection c) throws SQLException {
+            try {
+                stmt = c.createStatement();
+                resultSet = stmt.executeQuery(sqlQuery);
+                isDone = true;
+            } catch (Exception e) {
+                Toast.makeText(referenceToApplication, "Failed to execute SQL statement", Toast.LENGTH_LONG).show();
+                try {
+                    stmt.close();
+                } catch (Exception e2) {
+                    Toast.makeText(referenceToApplication, "SQL close fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+                this.cancel(false);
+            }
+        }
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+            ResultSet rs = null;
+            try {
+                rs = stmt.getResultSet();
+            } catch (SQLException e) {
+                Toast.makeText(referenceToApplication, "SQL getResultSet fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }
+            resultOp.processResult(rs);
+            try {
+                if (stmt != null)
+                    stmt.close();
+            } catch (SQLException e) {
+                Toast.makeText(referenceToApplication, "SQL close fail: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            }
+            super.onPostExecute(aBoolean);
+        }
+    }
+
     private abstract static class UploadTask extends AsyncTask<Void, Void, Boolean> {
 
         protected Boolean isDone;
@@ -106,7 +154,7 @@ public class DbOps extends AppCompatActivity {
             @Override
             protected void executeQuery(Connection c) throws SQLException {
                 String sql ="INSERT INTO simplytrackme.sessions (id_localsession,id_session,type,id_route, begin_time, end_time, distance, elevation, id_owner)\n" +
-                        "VALUES ("+track.getID() + ",coalesce((select max(id_session) from simplytrackme.sessions),0)+1,0,null," +"to_timestamp("+new Date(track.getStart_date()).getTime()/1000+"),"
+                        "VALUES ("+track.getID() + ",coalesce((select max(id_session) from simplytrackme.sessions),0)+1,"+track.getTrainingType()+",null," +"to_timestamp("+new Date(track.getStart_date()).getTime()/1000+"),"
                         +"to_timestamp("+new Date(track.getEnd_date()).getTime()/1000+")" + ","+ Double.valueOf(track.getTotalDistance()).intValue()
                         +","+track.getElevation()
                         +",(select id_user from simplytrackme.users where user_name like'" +track.getOwner().user_name +"'));";
@@ -152,38 +200,12 @@ public class DbOps extends AppCompatActivity {
         };
         t.execute();
     }
-    public static void GetRanking(AppCompatActivity c, final Ranking.RankingOp rankingOp) {
-        ResultSet rs;
-        UploadTask t = new UploadTask(c) {
-            @Override
-            protected void executeQuery(Connection c) throws SQLException {
-                String sql;
+    public static void ProcessQuery(AppCompatActivity context, String query, final DbOps.ResultOp resultOp) {
+        QueryTask queryTask = new QueryTask(context, query, resultOp);
+//        queryTask.execute();
+    }
+    public static void donothing() {
 
-                sql = "SELECT * FROM ranking_distance(INTERVAL '1 month');";
-                try {
-                    stmt = c.createStatement();
-                    resultSet = stmt.executeQuery(sql);
-                    isDone = true;
-                } catch (Exception e) {
-                    Toast.makeText(referenceToApplication, "Failed to execute SQL statement", Toast.LENGTH_LONG).show();
-                    stmt = null;
-                }
-            }
-            @Override
-            protected void onPostExecute(Boolean aBoolean) {
-                Ranking r = new Ranking(getResultSet());
-                rankingOp.run(r);
-                try {
-                    if (stmt != null)
-                        stmt.close();
-                } catch (SQLException e) {
-                    Toast.makeText(referenceToApplication, "SQL fail: " + stringResult, Toast.LENGTH_LONG).show();
-                    e.printStackTrace();
-                }
-                super.onPostExecute(aBoolean);
-            }
-        };
-        t.execute();
     }
 
 }

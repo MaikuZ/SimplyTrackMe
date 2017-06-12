@@ -78,9 +78,7 @@ class Track implements Serializable {
         return id;
     }
 
-    private class Type {
-        StringBuilder name;
-    }
+    private int trainingType;
 
     void setId(int a) {
         id = a;
@@ -128,6 +126,15 @@ class Track implements Serializable {
     void setOwner(Person a) {
         owner = a;
     }
+
+    public int getTrainingType() {
+        return trainingType;
+    }
+
+    public void setTrainingType(int trainingType) {
+        this.trainingType = trainingType;
+    }
+
     public class Node{
         private double lat;
         private double lon;

@@ -14,10 +14,10 @@ public class RankingDetails extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ranking_details);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         userField = (TextView) findViewById(R.id.author);
         resultField = (TextView) findViewById(R.id.result);
-        setSupportActionBar(toolbar);
+//        setSupportActionBar(toolbar);
         element = (RankingElement) this.getIntent().getSerializableExtra("rankdata");
         userField.setText(element.owner);
         resultField.setText(element.result);

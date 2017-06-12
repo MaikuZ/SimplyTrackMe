@@ -78,9 +78,10 @@
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_ranking_details">RankingDetails</string>
     <string-array name="trainings">
-        <item>cycling</item>
-        <item>skiing</item>
         <item>jogging</item>
-        <item>roller blading</item>
+        <item>cycling</item>
+        <item>swimming</item>
+        <item>rollerblading</item>
+        <item>skiing</item>
     </string-array>
 </resources>
