@@ -17,13 +17,12 @@ import java.sql.Statement;
  */
 
 public class DbOps extends AppCompatActivity {
-    static AppCompatActivity referenceToApp = null;
     private abstract static class UploadTask extends AsyncTask<Void, Void, Boolean> {
 
         protected Boolean isDone;
         protected String stringResult = new String();
         protected ResultSet resultSet;
-        static AppCompatActivity referenceToApplication = referenceToApp;
+        protected AppCompatActivity referenceToApplication = null;
         Statement stmt;
 
         public Boolean isDone()
@@ -38,14 +37,20 @@ public class DbOps extends AppCompatActivity {
         {
             return resultSet;
         }
-        protected void executeQuery(Connection c) throws SQLException {
+
+        UploadTask(AppCompatActivity ref) {
+            super();
+            referenceToApplication = ref;
         }
+
+        abstract protected void executeQuery(Connection c) throws SQLException;
+
         @Override
         protected Boolean doInBackground(Void ... params) {
             Connection c = null;
             try {
                 Class.forName("org.postgresql.Driver");
-                DriverManager.setLoginTimeout(3);
+                DriverManager.setLoginTimeout(6);
                 c = DriverManager
                         .getConnection("jdbc:postgresql://23160.p.tld.pl:5432/pg23160_1",
                                 "pg23160_1", PreferenceManager.getDefaultSharedPreferences(referenceToApplication).getString("password", "none"));
@@ -73,8 +78,8 @@ public class DbOps extends AppCompatActivity {
             super.onPostExecute(aBoolean);
         }
     }
-    public static void DeleteTrack(final Track track) {
-        UploadTask t = new UploadTask() {
+    public static void DeleteTrack(AppCompatActivity c, final Track track) {
+        UploadTask t = new UploadTask(c) {
             @Override
             protected void onPostExecute(Boolean aBoolean) {
                 if (!aBoolean)
@@ -97,7 +102,7 @@ public class DbOps extends AppCompatActivity {
     }
     public static void UploadTrack(AppCompatActivity c, final Track track) {
         String result;
-        UploadTask t = new UploadTask() {
+        UploadTask t = new UploadTask(c) {
             @Override
             protected void executeQuery(Connection c) throws SQLException {
                 String sql ="INSERT INTO simplytrackme.sessions (id_localsession,id_session,type,id_route, begin_time, end_time, distance, elevation, id_owner)\n" +
@@ -145,12 +150,11 @@ public class DbOps extends AppCompatActivity {
                 super.onPostExecute(aBoolean);
             }
         };
-        t.referenceToApplication = c;
         t.execute();
     }
-    public static void GetRanking(RankingActivity c, final Ranking.RankingOp rankingOp) {
+    public static void GetRanking(AppCompatActivity c, final Ranking.RankingOp rankingOp) {
         ResultSet rs;
-        UploadTask t = new UploadTask() {
+        UploadTask t = new UploadTask(c) {
             @Override
             protected void executeQuery(Connection c) throws SQLException {
                 String sql;
@@ -179,7 +183,6 @@ public class DbOps extends AppCompatActivity {
                 super.onPostExecute(aBoolean);
             }
         };
-        t.referenceToApplication = c;
         t.execute();
     }
 

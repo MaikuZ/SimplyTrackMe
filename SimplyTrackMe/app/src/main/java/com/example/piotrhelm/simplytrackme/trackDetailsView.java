@@ -30,8 +30,7 @@ public class trackDetailsView extends AppCompatActivity {
     }
 
     public void onPopFromServer(View view){
-        DbOps.referenceToApp = this;
-        DbOps.DeleteTrack(currentTrack);
+        DbOps.DeleteTrack(this, currentTrack);
     }
     @SuppressLint("NewApi")
     public void onDeleteLocally(View view) {
@@ -55,7 +54,6 @@ public class trackDetailsView extends AppCompatActivity {
     }
 
     public void onSendToServer(View view) {
-        DbOps.referenceToApp = this;
         DbOps.UploadTrack(this, currentTrack);
     }
     @Override
