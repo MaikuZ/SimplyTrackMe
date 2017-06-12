@@ -183,7 +183,7 @@ public class Start extends FragmentActivity implements OnMapReadyCallback {
 
     public void endSession(View view) {
         moveTaskToBack(false);
-        if(currentTrack == null) {
+        if(currentTrack == null || currentTrack.getList().size() < 2) {//current track needs to have at least 2 points.
             finish();
             return;
         }
