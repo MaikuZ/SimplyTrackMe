@@ -19,7 +19,7 @@ void single_group_member(int id) {
 }
 
 void generate_group_members(int size) {
-    for (int i = 0; i < size; i++) {
+    for (int i = 1; i < size; i++) {
         single_group_member(i);
     }
 }

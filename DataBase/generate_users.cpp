@@ -20,12 +20,14 @@ std::vector<std::string> surnames = {"Nowak","Wójcik","Kowalczyk","Woźniak","K
 void generate_single_user() {
     std::string exec_psql;
     bool is_man = std::rand() % 2 != 0;
+    int rand_num = std::rand() % 99;
+    int rand_num2 = std::rand() % 99;
     std::string name = is_man ? names_men[std::rand()%names_men.size()]
                               : names_women[std::rand()%names_women.size()-1];
     std::string surname = surnames[std::rand()%surnames.size()-1];
     std::string sex = is_man ? "m" : "f";
     exec_psql = "INSERT INTO simplytrackme.users (user_name,join_date,weight,height,sex,age,full_name) values ('";
-    exec_psql += (name + "_" + surname +"',");
+    exec_psql += (name + std::to_string(rand_num2) + "_" + surname +std::to_string(rand_num)+"',");
     exec_psql +=
             ( "current_date,"
               + std::to_string((std::rand()%(MAX_WEIGHT-MIN_WEIGHT)+MIN_WEIGHT))+','
@@ -44,5 +46,7 @@ void generate_users(int num) {
 
 int main() {
     srand(time(NULL));
-    generate_users(100);
+    int nummber;
+    std::cin >> nummber;
+    generate_users(nummber);
 }

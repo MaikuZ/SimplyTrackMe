@@ -1,6 +1,6 @@
 CREATE SCHEMA simplytrackme;
 
-CREATE TABLE simplytrackme.groups ( 
+CREATE TABLE simplytrackme.groups (
 	id_group             serial  NOT NULL,
 	name                 varchar(32)  NOT NULL,
 	private              bool  NOT NULL,
@@ -9,22 +9,22 @@ CREATE TABLE simplytrackme.groups (
 
 COMMENT ON COLUMN simplytrackme.groups.private IS 'determine whether the group ought be private or public';
 
-CREATE TABLE simplytrackme.routes ( 
+CREATE TABLE simplytrackme.routes (
 	name                 varchar(100)  NOT NULL,
 	id_route             serial  NOT NULL,
 	CONSTRAINT pk_route PRIMARY KEY ( id_route )
  );
 
-CREATE TABLE simplytrackme.type_workouts ( 
+CREATE TABLE simplytrackme.type_workouts (
 	id_type              serial  NOT NULL,
 	name                 varchar(100)  ,
 	CONSTRAINT pk_typ_treningu UNIQUE ( id_type ) ,
 	CONSTRAINT pk_typ_treningu_0 PRIMARY KEY ( id_type )
  );
 
-CREATE TABLE simplytrackme.users ( 
+CREATE TABLE simplytrackme.users (
 	id_user              serial  NOT NULL,
-	user_name            varchar(20)  NOT NULL,
+	user_name            varchar(40)  NOT NULL,
 	join_date            timestamp  ,
 	weight               numeric(4,1) DEFAULT 80 NOT NULL,
 	height               numeric(3) DEFAULT 160 NOT NULL,
@@ -32,12 +32,12 @@ CREATE TABLE simplytrackme.users (
 	age                  numeric(2) DEFAULT 18 NOT NULL,
 	full_name            varchar(100)  ,
 	CONSTRAINT pk_użytkownicy PRIMARY KEY ( id_user ),
-	CONSTRAINT idx_users UNIQUE ( user_name ) 
+	CONSTRAINT idx_users UNIQUE ( user_name )
  );
 
 ALTER TABLE simplytrackme.users ADD CONSTRAINT ck_1 CHECK ( sex like 'f' or sex like 'm' );
 
-CREATE TABLE simplytrackme.competitions ( 
+CREATE TABLE simplytrackme.competitions (
 	id_competition       serial  NOT NULL,
 	name                 varchar(32)  NOT NULL,
 	place                varchar(32)  NOT NULL,
@@ -49,10 +49,10 @@ CREATE TABLE simplytrackme.competitions (
 
 CREATE INDEX idx_competition ON simplytrackme.competitions ( id_type );
 
-CREATE TABLE simplytrackme.friends ( 
+CREATE TABLE simplytrackme.friends (
 	id_friend_b          integer  NOT NULL,
 	id_friend_a          integer  NOT NULL,
-	CONSTRAINT pk_znajomi UNIQUE ( id_friend_b ) 
+	CONSTRAINT pk_znajomi UNIQUE ( id_friend_b,id_friend_a )
  );
 
 ALTER TABLE simplytrackme.friends ADD CONSTRAINT ck_0 CHECK ( id_friend_a < id_friend_b );
@@ -62,7 +62,7 @@ If a is friend with b, so is b with a.';
 
 CREATE INDEX idx_znajomi ON simplytrackme.friends ( id_friend_a );
 
-CREATE TABLE simplytrackme.group_members ( 
+CREATE TABLE simplytrackme.group_members (
 	id_user              integer  NOT NULL,
 	id_group             integer  NOT NULL,
 	CONSTRAINT idx_group_members PRIMARY KEY ( id_user, id_group )
@@ -72,7 +72,7 @@ CREATE INDEX idx_group_members_0 ON simplytrackme.group_members ( id_group );
 
 CREATE INDEX idx_group_members_1 ON simplytrackme.group_members ( id_user );
 
-CREATE TABLE simplytrackme.participants ( 
+CREATE TABLE simplytrackme.participants (
 	id_competition       integer  NOT NULL,
 	id_user              integer  NOT NULL,
 	time_result          numeric  NOT NULL,
@@ -83,7 +83,7 @@ CREATE INDEX idx_contestants ON simplytrackme.participants ( id_competition );
 
 CREATE INDEX idx_contestants_0 ON simplytrackme.participants ( id_user );
 
-CREATE TABLE simplytrackme.sessions ( 
+CREATE TABLE simplytrackme.sessions (
 	id_session           serial  NOT NULL,
 	"type"               integer  NOT NULL,
 	begin_time           timestamp  NOT NULL,
@@ -94,14 +94,14 @@ CREATE TABLE simplytrackme.sessions (
 	id_route             integer  ,
 	id_localsession      integer  NOT NULL,
 	CONSTRAINT "pk_trening/sesja" PRIMARY KEY ( id_session ),
-	CONSTRAINT idx_sessions UNIQUE ( id_owner, id_localsession ) 
+	CONSTRAINT idx_sessions UNIQUE ( id_owner, id_localsession )
  );
 
 ALTER TABLE simplytrackme.sessions ADD CONSTRAINT ck_2 CHECK ( begin_time<end_time );
 
 CREATE INDEX idx_trening_sesja ON simplytrackme.sessions ( "type" );
 
-CREATE TABLE simplytrackme.type_heartrate_intervals ( 
+CREATE TABLE simplytrackme.type_heartrate_intervals (
 	minimum_speed        numeric(4,1)  NOT NULL,
 	maximum_speed        numeric(4,1)  ,
 	id_type_heartrate    serial  NOT NULL,
@@ -114,13 +114,13 @@ ALTER TABLE simplytrackme.type_heartrate_intervals ADD CONSTRAINT ck_3 CHECK ( m
 
 CREATE INDEX idx_type_heartrate ON simplytrackme.type_heartrate_intervals ( id_type );
 
-CREATE TABLE simplytrackme.user_sessions ( 
+CREATE TABLE simplytrackme.user_sessions (
 	id_user              integer  NOT NULL,
 	id_session           integer  NOT NULL,
 	CONSTRAINT idx_user_sessions PRIMARY KEY ( id_user, id_session )
  );
 
-CREATE TABLE simplytrackme.nodes ( 
+CREATE TABLE simplytrackme.nodes (
 	id_node              serial  NOT NULL,
 	lat                  numeric(12,10)  NOT NULL,
 	lon                  numeric(12,10)  NOT NULL,
@@ -140,10 +140,6 @@ COMMENT ON COLUMN simplytrackme.nodes.total_distance IS 'in meters';
 COMMENT ON COLUMN simplytrackme.nodes.duration IS 'in seconds';
 
 COMMENT ON COLUMN simplytrackme.nodes.elevation IS 'meters';
-
-COMMENT ON CONSTRAINT fk_competition ON simplytrackme.competition IS '';
-
-COMMENT ON CONSTRAINT fk_competition ON simplytrackme.competitions IS '';
 
 ALTER TABLE simplytrackme.friends ADD CONSTRAINT fk_friends FOREIGN KEY ( id_friend_a ) REFERENCES simplytrackme.users( id_user ) ON DELETE CASCADE;
 
@@ -191,9 +187,6 @@ COMMENT ON CONSTRAINT fk_type_heartrate ON simplytrackme.type_heartrate_interval
 
 ALTER TABLE simplytrackme.user_sessions ADD CONSTRAINT fk_user_session FOREIGN KEY ( id_session ) REFERENCES simplytrackme.sessions( id_session ) ON DELETE CASCADE;
 
-COMMENT ON CONSTRAINT fk_track_0 ON simplytrackme.track IS '';
-
 ALTER TABLE simplytrackme.user_sessions ADD CONSTRAINT fk_user_sessions FOREIGN KEY ( id_user ) REFERENCES simplytrackme.users( id_user ) ON DELETE CASCADE;
 
 COMMENT ON CONSTRAINT fk_user_sessions ON simplytrackme.user_sessions IS '';
-
