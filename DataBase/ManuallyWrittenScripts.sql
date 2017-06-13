@@ -137,3 +137,28 @@ LANGUAGE plpgsql;
 
 CREATE trigger user_owner_delete after delete on simplytrackme.user_sessions
 for each row execute procedure delete_if_owner();
+
+--check if join data is null
+ALTER TABLE simplytrackme.users ADD CONSTRAINT join_date_not_null CHECK (join_date NOTNULL);
+
+--session date trigger
+CREATE FUNCTION check_session_date() RETURNS trigger AS
+$$
+DECLARE
+  time_1 TIMESTAMP;
+  time_2 TIMESTAMP;
+BEGIN
+  time_1 = (SELECT join_date FROM simplytrackme.users WHERE id_user = NEW.id_user)::TIMESTAMP;
+  time_2 = (SELECT begin_time FROM simplytrackme.sessions WHERE id_session = NEW.id_session)::TIMESTAMP;
+  IF time_2 < time_1 THEN
+    RAISE EXCEPTION 'Session timestamp must be greater than user join timestamp';
+  END IF;
+  RETURN NEW;
+END;
+$$
+LANGUAGE plpgsql;
+
+CREATE TRIGGER check_session_date BEFORE INSERT OR UPDATE ON simplytrackme.user_sessions
+    FOR EACH ROW EXECUTE PROCEDURE check_session_date();
+
+
