@@ -1,53 +1,77 @@
-
 -- male
 --Calories Burned = [(Age x 0.2017) — (Weight*0.09036) + (Heart Rate x 0.6309) — 55.0969] x Time / 4.184.
 
 -- female
 --Calories Burned = [(Age x 0.074) — (Weight x 0.45359237*0.05741) + (Heart Rate x 0.4472) — 20.4022] x Time / 4.184.
 
---Journal of Sports Sciences - 01-MAR-05 - Prediction of energy expenditure from heart rate monitoring during submaximal exercise.
+--source : Journal of Sports Sciences - 01-MAR-05 - Prediction of energy expenditure from heart rate monitoring during submaximal exercise.
 
--- jeszcze nie dokoczone liczenie kalorii
-create or replace function count_calories()
-  returns void as
-  $$
+CREATE OR REPLACE VIEW session_details AS
+  SELECT
+    user_sessions.id_user,
+    users.age,
+    users.sex,
+    sessions.id_session,
+    (users.weight * 2.20462)                                              AS weight,
+    type_heartrate_intervals.heartrate                                    AS bpm,
+    date_part('epoch' :: TEXT, (sessions.end_time - sessions.begin_time)) AS time_in_secs
+  FROM ((((simplytrackme.user_sessions
+    LEFT JOIN simplytrackme.users ON ((user_sessions.id_user = users.id_user)))
+    LEFT JOIN simplytrackme.sessions ON ((user_sessions.id_session = sessions.id_session)))
+    LEFT JOIN simplytrackme.type_workouts ON ((sessions.type = type_workouts.id_type)))
+    LEFT JOIN simplytrackme.type_heartrate_intervals ON ((type_workouts.id_type = type_heartrate_intervals.id_type)))
+  WHERE (((((3.6 * sessions.distance)) :: DOUBLE PRECISION /
+           date_part('epoch', (sessions.end_time - sessions.begin_time)))
+          >= (type_heartrate_intervals.minimum_speed) :: DOUBLE PRECISION) AND (
+           (((3.6 * sessions.distance)) :: DOUBLE PRECISION /
+            date_part('epoch', (sessions.end_time - sessions.begin_time)))
+           <= (type_heartrate_intervals.maximum_speed) :: DOUBLE PRECISION));
+
+CREATE OR REPLACE FUNCTION count_calories_woman(user_id INTEGER, session_id INTEGER)
+  RETURNS INTEGER
+LANGUAGE plpgsql
+AS $$
 DECLARE
+  result   INTEGER;
+  result_2 INTEGER;
 BEGIN
-  create view temp as
-    select sessions.id_session as id_session,weight*0.4535 as weight_kg,
-      heartrate as bpm, extract(epoch from end_time-begin_time) as time_in_secs
-    from simplytrackme.user_sessions
-  left join simplytrackme.users on user_sessions.id_user = users.id_user
-  left join simplytrackme.sessions on user_sessions.id_session = sessions.id_session
-  left join simplytrackme.type_workouts on sessions.type = type_workouts.id_type
-  left join simplytrackme.type_heartrate_intervals on type_workouts.id_type = type_heartrate_intervals.id_type
-  where 3.6*distance/extract(epoch from end_time-begin_time) >= type_heartrate_intervals.minimum_speed
-        and 3.6*distance/extract(epoch from end_time-begin_time) <= type_heartrate_intervals.maximum_speed;
-  end;
-  $$
-  language plpgsql;
+  result = (SELECT (age * 0.074 - weight * 0.05741 + bpm * 0.4472 - 20.4022) * (time_in_secs / 60) / 4.184
+            FROM session_details
+            WHERE user_id = id_user AND id_session = session_id) :: INTEGER;
+  result_2 = (SELECT 3 * time_in_secs / 60
+              FROM session_details
+              WHERE user_id = id_user AND id_session = session_id) :: INTEGER;
+  RETURN greatest(result, result_2);
+END;
+$$;
 
-create or replace view temp as
-    select user_sessions.id_user as id_user, users.age as age, users.sex as sex,sessions.id_session as id_session,weight*0.4535 as weight,
-      heartrate as bpm, extract(epoch from end_time-begin_time) as time_in_secs
-    from simplytrackme.user_sessions
-  left join simplytrackme.users on user_sessions.id_user = users.id_user
-  left join simplytrackme.sessions on user_sessions.id_session = sessions.id_session
-  left join simplytrackme.type_workouts on sessions.type = type_workouts.id_type
-  left join simplytrackme.type_heartrate_intervals on type_workouts.id_type = type_heartrate_intervals.id_type
-  where 3.6*distance/extract(epoch from end_time-begin_time) >= type_heartrate_intervals.minimum_speed
-        and 3.6*distance/extract(epoch from end_time-begin_time) <= type_heartrate_intervals.maximum_speed;
+CREATE OR REPLACE FUNCTION count_calories_man(user_id INTEGER, session_id INTEGER)
+  RETURNS INTEGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  result   INTEGER;
+  result_2 INTEGER;
+  DECLARE
+BEGIN
+  result = (SELECT (age * 0.074 - weight * 0.09036 + bpm * 0.6309 - 55.0969) * (time_in_secs / 60) / 4.184
+            FROM session_details
+            WHERE user_id = id_user AND id_session = session_id) :: INTEGER;
+  result_2 = (SELECT 3 * time_in_secs / 60
+              FROM session_details
+              WHERE user_id = id_user AND id_session = session_id) :: INTEGER;
+  RETURN greatest(result, result_2);
+END;
+$$;
 
-create or replace view calories_burned as
-  select id_user, id_session, case when sex = 'm' then count_calories_man() else count_calories_woman() end
-    from temp;
 
-select sessions.id_session,sex,age,weight,3.6*distance/extract(epoch from end_time-begin_time) as kmh,heartrate from simplytrackme.user_sessions
-  left join simplytrackme.users on user_sessions.id_user = users.id_user
-  left join simplytrackme.sessions on user_sessions.id_session = sessions.id_session
-  left join simplytrackme.type_workouts on sessions.type = type_workouts.id_type
-  left join simplytrackme.type_heartrate_intervals on type_workouts.id_type = type_heartrate_intervals.id_type
-  where 3.6*distance/extract(epoch from end_time-begin_time) >= type_heartrate_intervals.minimum_speed and 3.6*distance/extract(epoch from end_time-begin_time) <= type_heartrate_intervals.maximum_speed;
-
-select extract(minutes from end_time - begin_time) + extract(seconds from end_time-begin_time)/60 from simplytrackme.sessions;
-
+CREATE OR REPLACE VIEW calories_burned AS
+  SELECT
+    id_user,
+    id_session,
+    CASE
+    WHEN (sex = 'm')
+      THEN count_calories_man(id_user, id_session)
+    ELSE count_calories_man(id_user, id_session)
+    END AS calories_burned
+  FROM session_details;
