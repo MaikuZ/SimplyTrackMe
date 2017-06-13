@@ -222,6 +222,7 @@ int main()
         cin>>idUser;
         int idType;
         cin>>idType;
+        cout<<"--"<<name<<":id_user="<<idUser<<":id_type="<<idType<<":minV"<<minV<<":maxV"<<maxV<<endl;
         cout<<ExtractGPX(name,minV,maxV + 0.001,idUser,idType)<<endl;
     }
 }
