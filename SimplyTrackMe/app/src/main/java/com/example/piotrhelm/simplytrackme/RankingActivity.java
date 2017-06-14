@@ -32,10 +32,30 @@ public class RankingActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 final Context c = RankingActivity.this;
                 if (position == 0) {
-                    DbOps.ProcessQuery(RankingActivity.this, "SELECT * FROM ranking_distance(INTERVAL '1 month') limit 7;", new DbOps.ResultOp() {
+                    DbOps.ProcessQuery(RankingActivity.this, "SELECT * FROM ranking_distance(INTERVAL '1 month') limit 9;", new DbOps.ResultOp() {
                         @Override
                         public void processResult(ResultSet rs) {
-                            final Ranking r = new Ranking(rs);
+                            final Ranking r = new Ranking(rs, " km");
+                            list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                public void onItemClick(AdapterView<?> parent, View view,
+                                                        int position, long id) {
+                                    Intent myIntent = new Intent(view.getContext(), RankingDetails.class);
+                                    myIntent.putExtra("rankdata", r.GetRankingData()[position]);
+                                    startActivityForResult(myIntent, 0);
+                                }
+                            });
+                            RankingAdapter adapter = new RankingAdapter(RankingActivity.this, R.layout.ranking_element, r.GetRankingData());
+                            list.setAdapter(adapter);
+                        }
+                    });
+                } else if (position == 1) {
+                    String sql = "SELECT u.user_name, distance " +
+                        "FROM simplytrackme.sessions JOIN simplytrackme.users u ON sessions.id_owner = u.id_user" +
+                        " ORDER BY distance DESC limit 9;";
+                    DbOps.ProcessQuery(RankingActivity.this, sql, new DbOps.ResultOp() {
+                        @Override
+                        public void processResult(ResultSet rs) {
+                            final Ranking r = new Ranking(rs, " km");
                             list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 public void onItemClick(AdapterView<?> parent, View view,
                                                         int position, long id) {
@@ -49,13 +69,13 @@ public class RankingActivity extends AppCompatActivity {
                         }
                     });
                 } else {
-                    String sql = "SELECT u.user_name, distance " +
-                        "FROM simplytrackme.sessions JOIN simplytrackme.users u ON sessions.id_owner = u.id_user" +
-                        " ORDER BY distance DESC limit 7;";
+                    String sql = "SELECT u.user_name, s.elevation*1000 " +
+                            "FROM simplytrackme.sessions s JOIN simplytrackme.users u ON s.id_owner = u.id_user" +
+                            " ORDER BY s.elevation DESC limit 9;";
                     DbOps.ProcessQuery(RankingActivity.this, sql, new DbOps.ResultOp() {
                         @Override
                         public void processResult(ResultSet rs) {
-                            final Ranking r = new Ranking(rs);
+                            final Ranking r = new Ranking(rs, " metres");
                             list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 public void onItemClick(AdapterView<?> parent, View view,
                                                         int position, long id) {

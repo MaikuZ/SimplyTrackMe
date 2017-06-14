@@ -87,5 +87,6 @@
     <string-array name="rankings">
         <item>Longest (users)</item>
         <item>Longest (trainings)</item>
+        <item>Greatest elevation (trainings)</item>
     </string-array>
 </resources>
