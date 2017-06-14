@@ -168,22 +168,22 @@ string ExtractGPX(string nameFile,double minV, double maxV,int idUser,int idType
         + to_string((long long int)totalDistance) + ","
         + to_string(duration) + ","
         + "0" + ","
-        + "(SELECT id_session from simplytrackme.sessions"
+        + "coalesce((SELECT id_session from simplytrackme.sessions"
         +" where id_owner = "
         + to_string(idUser)
         + " AND id_localsession = (SELECT max(id_localsession) from simplytrackme.sessions where id_owner = "
         + to_string(idUser)
         + " group by id_owner)"
-        + "));\n";
+        + "),0));\n";
    }
     string InsertIntoSessions;
     InsertIntoSessions +=
     (string)"INSERT INTO simplytrackme.sessions "
     + "(id_localsession,id_session,type,id_route, begin_time, end_time, distance, elevation, id_owner)"
     + "VALUES ("
-    + "(SELECT max(id_localsession)+1 from simplytrackme.sessions where id_owner = "
+    + "coalesce((SELECT coalesce(max(id_localsession),0)+1 from simplytrackme.sessions where id_owner = "
     + to_string(idUser)
-    + " group by id_owner)"
+    + " group by id_owner),0)"
     + ",coalesce((select max(id_session) from simplytrackme.sessions),0)+1,"
     ///^correct localssession. It is the maximum+1.
     + to_string(idType) +", " ///Type of exercise
@@ -199,11 +199,11 @@ string ExtractGPX(string nameFile,double minV, double maxV,int idUser,int idType
     InsertIntoUserSessions +=
     (string)"INSERT INTO simplytrackme.user_sessions (id_user, id_session) VALUES ("
     + to_string(idUser) + ","
-    + "(SELECT id_session from simplytrackme.sessions"
+    + "coalesce((SELECT id_session from simplytrackme.sessions"
     + " where id_owner = "
     + to_string(idUser) + " AND id_localsession = (SELECT max(id_localsession) from simplytrackme.sessions where id_owner = "
     + to_string(idUser)
-    + " group by id_owner)));\n";
+    + " group by id_owner)),0));\n";
    return InsertIntoSessions + InsertIntoNodes + InsertIntoUserSessions;
 }
 int main()
