@@ -1,10 +1,12 @@
-package com.example.piotrhelm.simplytrackme;
+package com.example.piotrhelm.simplytrackme.controller;
 
 import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-public class Profile extends AppCompatActivity {
+import com.example.piotrhelm.simplytrackme.R;
+
+public class ProfileActivity extends AppCompatActivity {
 
     public static class ProfilePreferenceFragment extends PreferenceFragment {
         @Override

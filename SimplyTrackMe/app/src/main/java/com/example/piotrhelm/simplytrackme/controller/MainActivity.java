@@ -1,4 +1,4 @@
-package com.example.piotrhelm.simplytrackme;
+package com.example.piotrhelm.simplytrackme.controller;
 
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -17,13 +17,18 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.example.piotrhelm.simplytrackme.R;
+import com.example.piotrhelm.simplytrackme.model.DbOps;
+import com.example.piotrhelm.simplytrackme.model.GPSTracker;
+import com.example.piotrhelm.simplytrackme.model.Track;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
 
 import static java.lang.StrictMath.max;
 
-public class Main extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
     private ListView drawerList;
     private TextView greetingTextView;
     private TextView greeterDescriptor;
@@ -41,7 +46,7 @@ public class Main extends AppCompatActivity {
         for(String x: listOfFiles){
             if(x.endsWith(".json")) {
                 String id = x.substring(0,x.length() - ".json".length());
-                Track.lastID = max(Track.lastID, Integer.parseInt(id)+1);
+                Track.setLastID(max(Track.getLastID(), Integer.parseInt(id)+1));
             }
         }
         drawerList = (ListView)findViewById(R.id.navList);
@@ -123,19 +128,19 @@ public class Main extends AppCompatActivity {
                 Intent intent;
                 switch (position) {
                 case 0:
-                    intent = new Intent(Main.this, History.class);
+                    intent = new Intent(MainActivity.this, HistoryActivity.class);
                     startActivity(intent);
                     break;
                 case 1:
-                    intent = new Intent(Main.this, RankingActivity.class);
+                    intent = new Intent(MainActivity.this, RankingActivity.class);
                     startActivity(intent);
                     break;
                 case 2:
-                    intent = new Intent(Main.this, SettingsActivity.class);
+                    intent = new Intent(MainActivity.this, SettingsActivity.class);
                     startActivity(intent);
                     break;
                 case 3:
-                    intent = new Intent(Main.this, Profile.class);
+                    intent = new Intent(MainActivity.this, ProfileActivity.class);
                     startActivity(intent);
                     break;
                 }
@@ -200,21 +205,21 @@ public class Main extends AppCompatActivity {
     }
     public void goToStart(View view) {
         GPSTracker tracker = new GPSTracker(this);
-        if(!tracker.isGPSOn) {
+        if(!tracker.isGPSOn()) {
             tracker.showSettingsAlert();
         }
-        if(tracker.isGPSOn) {
-            Intent intent = new Intent(this, Start.class);
+        if(tracker.isGPSOn()) {
+            Intent intent = new Intent(this, StartActivity.class);
             startActivity(intent);
         }
     }
     public void startSession(View view) {
         GPSTracker tracker = new GPSTracker(this);
-        if (!tracker.isGPSOn) {
+        if (!tracker.isGPSOn()) {
             tracker.showSettingsAlert();
         }
-        if (tracker.isGPSOn) {
-            Intent intent = new Intent(this, Start.class);
+        if (tracker.isGPSOn()) {
+            Intent intent = new Intent(this, StartActivity.class);
             intent.putExtra("training_type", training_type);
             startActivity(intent);
         }

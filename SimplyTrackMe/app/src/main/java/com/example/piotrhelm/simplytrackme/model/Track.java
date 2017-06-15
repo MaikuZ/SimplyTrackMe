@@ -1,13 +1,10 @@
-package com.example.piotrhelm.simplytrackme;
+package com.example.piotrhelm.simplytrackme.model;
 
 import android.content.Context;
 
 import com.google.gson.Gson;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.InputStreamReader;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -25,9 +22,15 @@ import static java.lang.StrictMath.abs;
  * Created by mz on 07.05.17.
  */
 
-class Track implements Serializable {
+public class Track implements Serializable {
 
     static int lastID = 0;
+    public static int getLastID() {
+        return lastID;
+    }
+    public static void setLastID(int id) {
+        lastID = id;
+    }
     static double getDistance(double lat1,double lon1, double lat2, double lon2)
     {
         double R = 6371e3;
@@ -95,7 +98,7 @@ class Track implements Serializable {
         Gson gson = new Gson();
         return gson.toJson(track_in);
     };
-    void saveToFile(Context mContext){
+    public void saveToFile(Context mContext){
         String filename = id + ".json";
         String outputString = toJSON(this);
         try {
@@ -128,20 +131,20 @@ class Track implements Serializable {
             lon = longitude;
             time_elapsed = time;
         }
-        Node(double lattitude, double longitude,long time,double elevation) {
+        public Node(double lattitude, double longitude,long time,double elevation) {
             lat = lattitude;
             lon = longitude;
             time_elapsed = time;
             altitude = elevation;
         }
-        double getLat() {
+        public double getLat() {
             return lat;
         }
-        double getLon(){
+        public double getLon(){
             return lon;
         }
-        double getAltitude() { return altitude;}
-        long getTime_elapsed(){
+        public double getAltitude() { return altitude;}
+        public long getTime_elapsed(){
             return time_elapsed;
         }
     }
@@ -157,7 +160,7 @@ class Track implements Serializable {
     }
 
     private ArrayList<Person> Participents;
-    Track() {
+    public Track() {
         List = new ArrayList<>();
         startDate = Calendar.getInstance().getTime().getTime();
         id = lastID++;

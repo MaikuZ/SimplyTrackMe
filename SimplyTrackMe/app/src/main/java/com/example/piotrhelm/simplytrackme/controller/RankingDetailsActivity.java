@@ -1,11 +1,12 @@
-package com.example.piotrhelm.simplytrackme;
+package com.example.piotrhelm.simplytrackme.controller;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.widget.TextView;
 
-public class RankingDetails extends AppCompatActivity {
+import com.example.piotrhelm.simplytrackme.R;
+
+public class RankingDetailsActivity extends AppCompatActivity {
 
     RankingElement element;
     TextView userField;

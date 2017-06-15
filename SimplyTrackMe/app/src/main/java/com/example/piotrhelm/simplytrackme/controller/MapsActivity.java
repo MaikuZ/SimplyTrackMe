@@ -1,9 +1,11 @@
-package com.example.piotrhelm.simplytrackme;
+package com.example.piotrhelm.simplytrackme.controller;
 
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
+import com.example.piotrhelm.simplytrackme.R;
+import com.example.piotrhelm.simplytrackme.model.Track;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;

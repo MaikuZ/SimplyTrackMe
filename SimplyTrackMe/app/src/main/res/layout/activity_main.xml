@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#ffffffff"
-        tools:context=".MainActivity">
+        tools:context=".controller.MainActivity">
 
         <TextView
             android:id="@+id/greeting_text_view"
@@ -99,7 +99,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.piotrhelm.simplytrackme.Main">
+    tools:context="com.example.piotrhelm.simplytrackme.MainActivityActivity">
 
     <Button
         android:id="@+id/button"

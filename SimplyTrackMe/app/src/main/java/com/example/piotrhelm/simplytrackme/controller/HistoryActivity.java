@@ -1,36 +1,25 @@
-package com.example.piotrhelm.simplytrackme;
+package com.example.piotrhelm.simplytrackme.controller;
 
-import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
-import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.example.piotrhelm.simplytrackme.R;
+import com.example.piotrhelm.simplytrackme.model.Track;
 import com.google.gson.Gson;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+
 import static java.lang.StrictMath.max;
-public class History extends AppCompatActivity {
+public class HistoryActivity extends AppCompatActivity {
 
     private ListView list;
     private ArrayAdapter<Track> adapter;
@@ -42,7 +31,7 @@ public class History extends AppCompatActivity {
         for(String x: listOfFiles){
             if(x.endsWith(".json")) {
                 String id = x.substring(0,x.length() - ".json".length());
-                Track.lastID = max(Track.lastID, Integer.parseInt(id)+1);
+                Track.setLastID(max(Track.getLastID(), Integer.parseInt(id)+1));
                 String fileName = x;
                 FileInputStream inputStream = null;
                 try {
@@ -72,7 +61,7 @@ public class History extends AppCompatActivity {
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view,
                                     int position, long id) {
-                Intent myIntent = new Intent(view.getContext(), trackDetailsView.class);
+                Intent myIntent = new Intent(view.getContext(), TrackDetailsActivity.class);
                 myIntent.putExtra("fileName", trackList.get((int)id).getID() + ".json");
                 startActivityForResult(myIntent, 0);
             }

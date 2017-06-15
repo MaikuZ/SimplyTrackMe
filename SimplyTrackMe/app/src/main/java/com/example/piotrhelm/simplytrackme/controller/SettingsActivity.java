@@ -1,4 +1,4 @@
-package com.example.piotrhelm.simplytrackme;
+package com.example.piotrhelm.simplytrackme.controller;
 
 
 import android.annotation.TargetApi;
@@ -20,6 +20,8 @@ import android.preference.RingtonePreference;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
+import com.example.piotrhelm.simplytrackme.R;
+
 import java.util.List;
 
 /**
@@ -33,7 +35,7 @@ import java.util.List;
  * href="http://developer.android.com/guide/topics/ui/settings.html">SettingsActivity
  * API Guide</a> for more information on developing a SettingsActivity UI.
  */
-public class SettingsActivity extends AppCompatPreferenceActivity {
+public class SettingsActivity extends PreferencesActivity {
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.

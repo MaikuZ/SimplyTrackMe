@@ -1,4 +1,4 @@
-package com.example.piotrhelm.simplytrackme;
+package com.example.piotrhelm.simplytrackme.controller;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -9,6 +9,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.piotrhelm.simplytrackme.R;
+import com.example.piotrhelm.simplytrackme.model.DbOps;
+import com.example.piotrhelm.simplytrackme.model.Track;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -17,7 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 
-public class trackDetailsView extends AppCompatActivity {
+public class TrackDetailsActivity extends AppCompatActivity {
 
     Track currentTrack;
     private void updateTextView(String newText,TextView textView) {

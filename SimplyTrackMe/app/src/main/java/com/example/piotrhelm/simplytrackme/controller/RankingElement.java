@@ -1,4 +1,4 @@
-package com.example.piotrhelm.simplytrackme;
+package com.example.piotrhelm.simplytrackme.controller;
 
 import java.io.Serializable;
 
@@ -9,10 +9,10 @@ import java.io.Serializable;
 public class RankingElement implements Serializable {
     public String owner;
     public String result;
-    RankingElement() {
+    public RankingElement() {
 
     }
-    RankingElement(String owner, String result) {
+    public RankingElement(String owner, String result) {
         this.owner = owner;
         this.result = result;
     }

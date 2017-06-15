@@ -1,4 +1,4 @@
-package com.example.piotrhelm.simplytrackme;
+package com.example.piotrhelm.simplytrackme.model;
 
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;

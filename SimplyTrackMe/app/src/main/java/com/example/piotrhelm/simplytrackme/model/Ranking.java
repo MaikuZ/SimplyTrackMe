@@ -1,4 +1,6 @@
-package com.example.piotrhelm.simplytrackme;
+package com.example.piotrhelm.simplytrackme.model;
+
+import com.example.piotrhelm.simplytrackme.controller.RankingElement;
 
 import java.sql.ResultSet;
 import java.text.DecimalFormat;
@@ -10,7 +12,7 @@ import java.util.ArrayList;
 
 public class Ranking {
     RankingElement rankData[] = { new RankingElement("wrong", "wrong")};
-    Ranking(ResultSet rs, String postfix) {
+    public Ranking(ResultSet rs, String postfix) {
         try {
             ArrayList<RankingElement> array = new ArrayList<>();
             rankData = new RankingElement[rs.getFetchSize()];

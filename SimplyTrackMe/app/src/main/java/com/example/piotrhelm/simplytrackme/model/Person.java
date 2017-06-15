@@ -1,4 +1,4 @@
-package com.example.piotrhelm.simplytrackme;
+package com.example.piotrhelm.simplytrackme.model;
 
 import java.util.ArrayList;
 
@@ -6,7 +6,7 @@ import java.util.ArrayList;
  * Created by mz on 06.05.17.
  */
 
-class Person {
+public class Person {
     public Person() {
         this.name = "DUMMY MAN";
     }

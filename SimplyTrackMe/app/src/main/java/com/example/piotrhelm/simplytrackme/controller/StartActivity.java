@@ -1,4 +1,4 @@
-package com.example.piotrhelm.simplytrackme;
+package com.example.piotrhelm.simplytrackme.controller;
 
 import android.Manifest;
 import android.content.Intent;
@@ -14,6 +14,10 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.piotrhelm.simplytrackme.R;
+import com.example.piotrhelm.simplytrackme.model.GPSTracker;
+import com.example.piotrhelm.simplytrackme.model.Person;
+import com.example.piotrhelm.simplytrackme.model.Track;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,7 +31,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class Start extends FragmentActivity implements OnMapReadyCallback {
+public class StartActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private Thread GPSUpdater;
@@ -65,7 +69,7 @@ public class Start extends FragmentActivity implements OnMapReadyCallback {
         final GPSTracker tracker = new GPSTracker(this);
 
 
-        if(!tracker.isGPSOn) {
+        if(!tracker.isGPSOn()) {
             tracker.showSettingsAlert();
         }
 
@@ -195,8 +199,8 @@ public class Start extends FragmentActivity implements OnMapReadyCallback {
         currentTrack.saveToFile(this);
         GPSUpdater.interrupt();
 
-        Intent myIntent = new Intent(view.getContext(), trackDetailsView.class);
-        myIntent.putExtra("fileName", currentTrack.getID() + ".json");///pass filename to trackDetailsView activity
+        Intent myIntent = new Intent(view.getContext(), TrackDetailsActivity.class);
+        myIntent.putExtra("fileName", currentTrack.getID() + ".json");///pass filename to TrackDetailsActivity activity
         startActivityForResult(myIntent, 0);
         finish();
     }
